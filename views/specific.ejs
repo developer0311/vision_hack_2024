@@ -1,0 +1,39 @@
+<%- include('partials/header') %>
+
+    <section class="specific-item">
+        <div class="item-image">
+            <div class="detail-image">
+                <img src="<%= product.image_url %>" alt="">
+            </div>
+            <div class="deal-option">
+                <a href="/cart/add?productId=<%= product.id %>" class="cart"><i class='bx bx-cart-alt' style='color:#ffffff'></i>Add to cart</a>
+                <a href="" class="buy"><i class='bx bxs-hot' style='color:#ffffff'></i>Buy now</a>
+            </div>
+        </div>
+
+        <div class="item-details">
+            <div class="item-name">
+                <h3><%= product.name %></h3>
+            </div>
+            <div class="price-details">
+                <p class="special">Special price</p>
+                <div class="item-price">
+                    <p class="special-price">₹<%= product.price %></p>
+                    <p class="actual-price">₹<%= product.max_price %></p>
+                    <p class="discount">20% off</p>
+                </div>
+            </div>
+
+            <div class="item-more-details">
+               <ul>
+                <li><%= product.description %></li>
+               </ul>
+            </div>
+        </div>
+
+
+    </section>
+
+
+
+    <%- include('partials/footer') %>

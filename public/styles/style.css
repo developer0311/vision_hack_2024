@@ -1,0 +1,339 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+
+
+/*-------------------------- BASICS --------------------------*/
+:root{
+    --nav-bg-color: #fff;
+    --nav-text-color: #fff;
+    
+    --body-bg-color: #c1ebff;
+    --body-text-color: #fff;
+    
+    --footer-bg-color: #212529;
+    --footer-text-color: #212529;
+    
+}
+
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    overflow-x: hidden;
+    background-color: var(--body-bg-color);
+}
+
+body::-webkit-scrollbar{
+    width: 0px;
+}
+
+h1{
+    font-family: "Nunito", sans-serif;
+}
+
+h3{
+    font-family: "Fredoka", sans-serif;
+}
+
+p,
+a,
+label,
+input,
+button,
+textarea{
+    font-family: "Montserrat", sans-serif;
+}
+
+p{
+    margin-bottom: 1px;
+}
+
+main{
+    min-height: calc(100vh - 70px - 67px);
+    padding-top: 30px;
+}
+
+section{
+    width: 90vw;
+    margin: 0px auto 20px auto;
+    background-color: #fff;
+}
+
+/*-------------------------- HEADER --------------------------*/
+
+.navbar{
+    padding: 15px 4vw
+}
+
+.navbar i{
+    margin-right: 5px;
+}
+
+
+/*-------------------------- FOOTER --------------------------*/
+.custom-footer{
+    border-top: 1px solid var(--footer-text-color) !important;
+}
+
+footer span{
+    margin-bottom: 30px;
+}
+
+footer i{
+    font-size: 30px;
+}
+
+
+/*-------------------------- HOME.ejs --------------------------*/
+
+.home-container-2 .slider{
+    width: 100%;
+    margin: auto;
+}
+
+.home-container-2 .slider .carousel-indicators button{
+    width: 6px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: rgb(253, 253, 253);
+}
+
+
+/* General styling */
+.home-items-section {
+    padding: 20px;
+}
+
+.home-items-section .home-product-cards-wrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    overflow: hidden; /* Hide overflow for the carousel effect */
+}
+
+.home-items-section .home-product-cards {
+    display: flex;
+    transition: transform 0.5s ease;
+    width: 100%; /* Full width of the parent container */
+}
+
+.home-items-section .home-product-cards .card-items {
+    flex: 0 0 calc(20% - 30px); /* Adjust as needed for responsive design */
+    margin: 0 15px; /* Maintain horizontal margin */
+    box-sizing: border-box; /* Include padding and border in width calculation */
+}
+
+.home-items-section .home-product-cards .card-items .card {
+    display: flex; /* Enable flexbox for the card */
+    flex-direction: column; /* Align children in a column */
+    justify-content: space-between; /* Space between the image and text */
+    width: 100%;
+    height: 100%; /* Ensure the card takes full height */
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid #ddd; /* Optional: Add a border for better visibility */
+    border-radius: 5px; /* Optional: Rounded corners */
+    overflow: hidden; /* Prevent overflow of text */
+}
+
+.home-items-section .home-product-cards .card-items .card .img-container {
+    width: 100%; /* Ensure the container takes full width */
+    height: 200px; /* Fixed height for the image container */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Hide any overflow */
+}
+
+.home-items-section .home-product-cards .card-items .card .img-container img {
+    width: auto; /* Allow image to scale proportionally */
+    height: 100%; /* Set height to 100% of the container */
+    max-width: 100%; /* Prevent the image from exceeding the container width */
+}
+
+.home-items-section .home-product-cards .card-body {
+    padding: 10px;
+    display: flex; /* Enable flexbox for the body */
+    flex-direction: column; /* Align text vertically */
+    flex-grow: 1; /* Allow the card body to grow and fill the space */
+}
+
+.home-items-section .home-product-cards .card-items .card p {
+    font-size: 15px;
+    text-align: center;
+    margin: 5px 0; /* Add a margin for better spacing */
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--body-bg-color);
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 2% 1%;
+    cursor: pointer;
+    z-index: 10;
+    border-radius: 5px;
+    box-shadow: 0px 0px 4px 0.1px #000;
+}
+
+#leftBtn {
+    left: 5px;
+}
+
+#rightBtn {
+    right: 5px;
+}
+ 
+
+
+
+
+/*-------------------------- SPECIFIC.ejs --------------------------*/
+
+.specific-item{
+    min-height: calc((100vh - 70px - 97px - 200px));
+    margin-top: 80px;
+    display: flex;
+    align-items: center;
+    padding: 0px 20px;
+}
+
+.specific-item .item-image{
+    padding: 50px 20px;
+    width: 40%;
+    margin-right: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.specific-item .item-image .detail-image{
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.specific-item .item-image img{
+    width: 90%;
+}
+
+.specific-item .item-image .deal-option{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.specific-item .item-image .deal-option a{
+    text-decoration: none;
+    margin: 0px 20px;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 20px;
+    width: 40%;
+    text-align: center;
+}
+
+.specific-item .item-image .deal-option .cart{
+    background-color: #ff9f00;
+}
+
+.specific-item .item-image .deal-option .buy{
+    background-color: #fb641b;
+}
+
+.specific-item p{
+    margin-bottom: 5px;
+}
+
+.specific-item .item-details{
+    width: 60%;
+    padding: 0px 40px;
+}
+
+.specific-item .item-details .item-name h3{
+    font-size: 25px;
+}
+
+.specific-item .price-details .special{
+    color: rgb(5, 189, 5);
+    font-weight: bolder;
+}
+
+.specific-item .price-details .item-price{
+    display: flex;
+    align-items: baseline;
+}
+
+.specific-item .price-details .item-price > *{
+    margin-right: 20px;
+}
+
+.specific-item .price-details .item-price .special-price{
+    font-size: 30px;
+}
+
+.specific-item .item-details .price-details .item-price .actual-price{
+    text-decoration: line-through;
+}
+
+.specific-item .item-details .price-details .item-price .discount{
+    color: rgb(5, 189, 5);
+    font-weight: bolder;
+}
+
+.specific-item .item-details .item-more-details ul{
+    padding: 0;
+}
+.specific-item .item-details .item-more-details ul li{
+    list-style: none;
+}
+
+
+/*-------------------------- LOGIN.ejs & REGISTER.ejs --------------------------*/
+
+.l-g-form{
+    margin-bottom: 20px;
+}
+
+.form-group{
+    margin-bottom: 10px;
+}
+
+.card-body img{
+    width: 25px;
+    margin-right: 10px;
+}
+
+/*-------------------------- CART.ejs --------------------------*/
+
+.cart_options{
+    display: flex;
+    justify-content: center;
+}
+
+.cart_options > *{
+    width: 70px;
+    margin: 0px 5px;
+}
+
+
+/*-------------------------- LOGIN.ejs & REGISTER.ejs --------------------------*/
+
+.lr{
+    margin-bottom: 20px;
+}
+
+
+
+
+
+
+
