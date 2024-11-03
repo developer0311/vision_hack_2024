@@ -16,12 +16,28 @@
             <div class="item-name">
                 <h3><%= product.name %></h3>
             </div>
+
+            <div class="tags">
+                <div class="eco-friendly not">
+                    <p>Eco Friendly</p>
+                    <img src="/images/eco-friendly.png" class="tag-image" alt="">
+                </div>
+                <div class="recycled partial">
+                    <p>Recycled</p>
+                    <img src="/images/recycled.png" class="tag-image" alt="">
+                </div>
+                <div class="locally-sourced fully">
+                    <p>Locally Sourced</p>
+                    <img src="/images/locally-sourced.png" class="tag-image" alt="">
+                </div>
+            </div>
+
             <div class="price-details">
                 <p class="special">Special price</p>
                 <div class="item-price">
                     <p class="special-price">₹<%= product.price %></p>
-                    <p class="actual-price">₹<%= product.max_price %></p>
-                    <p class="discount">20% off</p>
+                    <p class="actual-price">₹<%= product.actual_price %></p>
+                    <p class="discount">%<%= product.discount_percent %></p>
                 </div>
             </div>
 

@@ -1,5 +1,5 @@
 <%- include('partials/header') %>
-<div class="container col-sm-9 col-lg-6 mt-5">
+<div class="container col-sm-9 col-lg-6">
   <h1>Register</h1>
 
   <div class="row">
@@ -7,34 +7,58 @@
       <div class="card">
         <div class="card-body">
 
+          <!-- Display error message if it exists -->
+          <% if (typeof errorMessage !== 'undefined') { %>
+            <div class="alert alert-danger" role="alert">
+              <%= errorMessage %>
+            </div>
+          <% } %>
+
           <!-- Makes POST request to /register route -->
-          <form class="l-g-for" action="/register" method="POST">
+          <form class="l-g-form" action="/register" method="POST">
+            <!-- Username -->
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" class="form-control" name="username" required>
+            </div>
+
+            <!-- Email -->
             <div class="form-group">
               <label for="email">Email</label>
-              <input type="email" class="form-control" name="username">
+              <input type="email" class="form-control" name="email" required>
             </div>
+
+            <!-- Password -->
             <div class="form-group">
               <label for="password">Password</label>
-              <input type="password" class="form-control" name="password">
+              <input type="password" class="form-control" name="password" required>
             </div>
+
+            <!-- Mobile Number -->
+            <div class="form-group">
+              <label for="mobile_number">Mobile Number</label>
+              <input type="text" class="form-control" name="mobile_number" required>
+            </div>
+
+            <!-- Address -->
+            <div class="form-group">
+              <label for="address">Address</label>
+              <textarea class="form-control" name="address" rows="3" required></textarea>
+            </div>
+
+            <!-- Pincode -->
+            <div class="form-group">
+              <label for="pincode">Pincode</label>
+              <input type="number" class="form-control" name="pincode" required>
+            </div>
+
+            <!-- Submit Button -->
             <button type="submit" class="btn btn-dark">Register</button>
           </form>
 
         </div>
       </div>
     </div>
-
-    <div class="col-sm-12">
-      <div class="card social-block">
-        <div class="card-body">
-          <a class="btn btn-block" href="/auth/google" role="button">
-            <img src="images/google.png" alt="">
-            Sign Up with Google
-          </a>
-        </div>
-      </div>
-    </div>
-
   </div>
 </div>
 

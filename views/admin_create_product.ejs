@@ -30,18 +30,28 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="max_price" class="form-label">Max Price:</label>
-                    <input type="text" id="max_price" name="max_price" class="form-control" required>
+                    <label for="company_name" class="form-label">Company Name:</label>
+                    <input type="text" id="company_name" name="company_name" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label for="production_location" class="form-label">Production Location:</label>
+                    <input type="text" id="production_location" name="production_location" class="form-control">
+                </div>
+
+                <div class="mb-3">
+                    <label for="actual_price" class="form-label">Max Price:</label>
+                    <input type="number" step="0.01" id="actual_price" name="actual_price" class="form-control" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="price" class="form-label">Price:</label>
-                    <input type="text" id="price" name="price" class="form-control" required>
+                    <input type="number" step="0.01" id="price" name="price" class="form-control" required>
                 </div>
 
                 <div class="mb-3">
-                    <label for="offer_percent" class="form-label">Offer Percent:</label>
-                    <input type="number" id="offer_percent" name="offer_percent" class="form-control" required>
+                    <label for="discount_percent" class="form-label">Discount Percent:</label>
+                    <input type="number" id="discount_percent" name="discount_percent" class="form-control" required>
                 </div>
 
                 <div class="mb-3">
@@ -49,19 +59,53 @@
                     <textarea id="description" name="description" class="form-control" required></textarea>
                 </div>
 
-                <!-- New Cover Image Upload Section -->
                 <div class="mb-3">
-                    <label for="image_url" class="form-label">Image Url:</label>
-                    <input type="url" id="image_url" name="image_url" class="form-control" accept="image/*" required>
+                    <label for="image_url" class="form-label">Image URL:</label>
+                    <input type="url" id="image_url" name="image_url" class="form-control" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="category" class="form-label">Category:</label>
-                    <input type="text" id="category" name="category" class="form-control" accept="application/pdf" required>
+                    <input type="text" id="category" name="category" class="form-control" required>
                 </div>
 
+                <!-- Eco-Friendliness Level -->
+                <div class="mb-3">
+                    <label for="eco_friendly" class="form-label">Eco-Friendly Level:</label>
+                    <select id="eco_friendly" name="eco_friendly" class="form-control">
+                        <option value="0">Not Eco-Friendly</option>
+                        <option value="1">Eco-Friendly</option>
+                        <option value="2">Highly Eco-Friendly</option>
+                    </select>
+                </div>
 
-                <button type="submit" class="btn btn-success">Add product</button>
+                <!-- Recycled Level -->
+                <div class="mb-3">
+                    <label for="recycled" class="form-label">Recycled Level:</label>
+                    <select id="recycled" name="recycled" class="form-control">
+                        <option value="0">Not Recycled</option>
+                        <option value="1">Recycled</option>
+                        <option value="2">Highly Recycled</option>
+                    </select>
+                </div>
+
+                <!-- Locally Sourced Level -->
+                <div class="mb-3">
+                    <label for="locally_sourced" class="form-label">Locally Sourced Level:</label>
+                    <select id="locally_sourced" name="locally_sourced" class="form-control">
+                        <option value="0">Not Locally Sourced</option>
+                        <option value="1">Locally Sourced</option>
+                        <option value="2">Highly Locally Sourced</option>
+                    </select>
+                </div>
+
+                <!-- Rating -->
+                <div class="mb-3">
+                    <label for="rating" class="form-label">Rating:</label>
+                    <input type="number" step="0.01" max="5.00" min="0.00" value="0" id="rating" name="rating" class="form-control">
+                </div>
+
+                <button type="submit" class="btn btn-success">Add Product</button>
             </form>
 
         </section>
