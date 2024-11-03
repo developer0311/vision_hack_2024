@@ -14,7 +14,7 @@ CREATE TABLE products (
     eco_friendly INT DEFAULT 0 CHECK (eco_friendly IN (0, 1, 2)),    -- 0: not eco-friendly, 1: eco-friendly, 2: highly eco-friendly
     recycled INT DEFAULT 0 CHECK (recycled IN (0, 1, 2)),
     locally_sourced INT DEFAULT 0 CHECK (locally_sourced IN (0, 1, 2)),
-    rating DECIMAL(3, 2),
+    rating DECIMAL(3, 2) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
