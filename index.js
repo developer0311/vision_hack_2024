@@ -1,4 +1,5 @@
 import express from "express";
+import axios from 'axios';
 import bodyParser from "body-parser";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
@@ -8,14 +9,20 @@ import passport from "passport";
 import { Strategy } from "passport-local";
 import GoogleStrategy from "passport-google-oauth2";
 import session from "express-session";
+import flash from "express-flash";
 import "dotenv/config";
+import { v2 as cloudinary } from "cloudinary";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 
 const app = express();
 const port = process.env.SERVER_PORT;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const saltRounds = 10;
 const admin_password = process.env.ADMIN_PASSWORD;
-let home_active = "active";
+const auth_cb_url = process.env.GOOGLE_CB_URL;
+let home_active = "my-active";
 let cart_active = "";
 
 app.use(
@@ -27,9 +34,13 @@ app.use(
 );
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.set("view engine", "ejs"); // Set view engine
 
 const db = new pg.Client({
   user: process.env.DB_USER,
@@ -40,24 +51,128 @@ const db = new pg.Client({
 });
 db.connect();
 
-//-------------------------- FUNCTIONS --------------------------//
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Multer Configuration to handle file uploads
+const storage = multer.diskStorage({
+  destination: "uploads/", // Temporary folder to store files before Cloudinary upload
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage });
+
+let deleteFile = (filePath) => {
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error(`Error deleting file: ${filePath}`, err);
+    } else {
+      console.log(`File deleted: ${filePath}`);
+    }
+  });
+};
+
+// ------------------------------------------------------- FUNCTIONS -------------------------------------------------------//
 
 let get_username = (email) => {
-  const username = email.split("@")[0]; // Splits at '@' and takes the first part
-  return username; // Output: dipratidas2004
+  let username = email.split("@")[0];
+  return username;
 };
 
 let active_page = (pageName) => {
   if (pageName == "home") {
-    home_active = "active";
+    home_active = "my-active";
     cart_active = "";
   } else if (pageName == "cart") {
     home_active = "";
-    cart_active = "active";
+    cart_active = "my-active";
   }
 };
 
-//-------------------------- INDEX Routes --------------------------//
+// Cloudinary upload and transformation function
+let handleCloudinaryImageUpload = async (filePath, fileName) => {
+  try {
+    // Set the public ID to include the destination folder
+    const publicId = `${fileName}`;
+    const folderPath = "book_lib_1/images/cover_images";
+
+    // Upload to Cloudinary
+    const uploadResult = await cloudinary.uploader.upload(filePath, {
+      public_id: publicId,
+      folder: folderPath,
+    });
+
+    // Optimize the image (fetch_format and quality auto)
+    const optimizeUrl = cloudinary.url(publicId, {
+      fetch_format: "auto",
+      quality: "auto",
+    });
+
+    // Auto-crop the image
+    const autoCropUrl = cloudinary.url(publicId, {
+      crop: "auto",
+      gravity: "auto",
+    });
+
+    return {
+      uploadResult,
+      optimizeUrl,
+      autoCropUrl,
+    };
+  } catch (error) {
+    console.error("Error uploading to Cloudinary:", error);
+    throw error;
+  }
+};
+
+// Cloudinary upload and transformation function for PDFs
+let handleCloudinaryPDFUpload = async (filePath, fileName) => {
+  try {
+    const publicId = `${fileName}`;
+    const folderPath = `book_lib_1/pdfs`;
+
+    // Upload PDF to Cloudinary
+    const uploadResult = await cloudinary.uploader.upload(filePath, {
+      resource_type: "raw", // Specify that this is a raw file (PDF)
+      public_id: publicId,
+      folder: folderPath,
+    });
+
+    // Optimize the PDF file (fetch_format auto)
+    const optimizeUrl = cloudinary.url(publicId, {
+      resource_type: "raw", // Specify resource type as raw for PDFs
+      fetch_format: "auto",
+    });
+
+    return {
+      uploadResult,
+      optimizeUrl,
+    };
+  } catch (error) {
+    console.error("Error uploading PDF to Cloudinary:", error);
+    throw error;
+  }
+};
+
+
+let handleCloudinaryImageDelete = async (public_id) => {
+  cloudinary.uploader
+  .destroy([public_id], { type: 'upload', resource_type: 'image' })
+  .then(result => console.log(result));
+};
+
+let handleCloudinaryPDFDelete = async (public_id) => {
+  cloudinary.uploader
+  .destroy([public_id], { type: 'upload', resource_type: 'raw' })
+  .then(result => console.log(result));
+};
+
+//-------------------------- SEARCH Routes --------------------------//
 
 app.get("/search", async (req, res) => {
   const searchQuery = req.query.query; // Get the search term from the query string
@@ -92,8 +207,7 @@ app.get("/", (req, res) => {
 
 //-------------------------- INDEX Routes --------------------------//
 
-app.get(
-  "/auth/google/home",
+app.get("/auth/google/home",
   passport.authenticate("google", {
     successRedirect: "/home",
     failureRedirect: "/login",
@@ -152,7 +266,9 @@ app.get("/specific", async (req, res) => {
 
     if (product) {
       const user = req.user;
+      // console.log(user.email)
       let username = get_username(user.email);
+      console.log(username)
       res.render(__dirname + "/views/specific.ejs", {
         product: product,
         profile_name: username || "Guest",
@@ -327,12 +443,12 @@ app.post("/register", async (req, res) => {
 
 //-------------------------- SPECIFIC ITEM Route --------------------------//
 
-app.get("/specific", (req, res) => {
-  active_page("home");
-  res.render(__dirname + "/views/specific.ejs", {
-    profile_name: username || "Guest",
-  });
-});
+// app.get("/specific", (req, res) => {
+//   active_page("home");
+//   res.render(__dirname + "/views/specific.ejs", {
+//     profile_name: username || "Guest",
+//   });
+// });
 
 //-------------------------- LOGOUT Route --------------------------//
 
@@ -345,15 +461,13 @@ app.get("/logout", (req, res) => {
   });
 });
 
-app.get(
-  "/auth/google",
+app.get("/auth/google",
   passport.authenticate("google", {
     scope: ["profile", "email"],
   })
 );
 
-passport.use(
-  "local",
+passport.use("local",
   new Strategy(async function verify(username, password, cb) {
     try {
       const result = await db.query("SELECT * FROM users WHERE email = $1 ", [

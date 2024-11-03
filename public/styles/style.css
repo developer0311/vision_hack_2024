@@ -54,6 +54,9 @@ p{
 
 main{
     min-height: calc(100vh - 70px - 67px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     padding-top: 30px;
 }
 
@@ -193,13 +196,11 @@ footer i{
  
 
 
-
-
 /*-------------------------- SPECIFIC.ejs --------------------------*/
 
 .specific-item{
-    min-height: calc((100vh - 70px - 97px - 200px));
-    margin-top: 80px;
+    /* min-height: calc((100vh - 70px - 97px - 200px));
+    margin-top: 80px; */
     display: flex;
     align-items: center;
     padding: 0px 20px;
@@ -207,7 +208,7 @@ footer i{
 
 .specific-item .item-image{
     padding: 50px 20px;
-    width: 40%;
+    width: 50%;
     margin-right: 40px;
     display: flex;
     flex-direction: column;
@@ -233,14 +234,17 @@ footer i{
 
 .specific-item .item-image .deal-option a{
     text-decoration: none;
-    margin: 0px 20px;
-    padding: 10px 20px;
+    margin: 0px 5px;
+    padding: 10px 10px;
     color: #fff;
-    font-size: 20px;
-    width: 40%;
+    font-size: 15px;
+    width: 33%;
     text-align: center;
 }
 
+.specific-item .item-image .deal-option .share-social{
+    background-color: #0cc0df;
+}
 .specific-item .item-image .deal-option .cart{
     background-color: #ff9f00;
 }
