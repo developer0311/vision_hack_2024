@@ -25,7 +25,7 @@ CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
-    mobile_number NOT NULL,
+    mobile_number VARCHAR(20) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     address TEXT NOT NULL,
     pincode INT NOT NULL,
