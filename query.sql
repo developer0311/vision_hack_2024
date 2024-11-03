@@ -28,6 +28,7 @@ CREATE TABLE users (
     mobile_number NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     address TEXT NOT NULL,
+    pincode INT NOT NULL,
     total_purchases INT DEFAULT 0,
     total_follower INT DEFAULT 0,
     total_following INT DEFAULT 0,
