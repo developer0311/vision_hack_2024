@@ -456,3 +456,11 @@ footer i{
 .lr{
     margin-bottom: 20px;
 }
+
+.toggle-pass {
+    border: transparent;
+    position: absolute !important;
+    z-index: 100 !important;
+    right: 0%;
+    padding: 8px 14px;
+}

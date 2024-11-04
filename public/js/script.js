@@ -93,3 +93,21 @@ carousels.forEach((carousel) => {
     slideCards(); // Slide to the starting position
 });
 
+// for toggle-password-visibility button
+const btn = document.getElementsByClassName('toggle-pass');
+const password = document.getElementsByClassName('pass');
+
+for (const key in btn) {
+    btn[key].addEventListener('click', (e) => {
+        e.preventDefault();
+        if (password[key].getAttribute('type') == 'password') {
+            btn[key].classList.remove('bx-hide');
+            btn[key].classList.add('bx-show');
+            password[key].setAttribute('type', 'text');
+        } else if (password[key].getAttribute('type') == 'text') {
+            btn[key].classList.remove('bx-show');
+            btn[key].classList.add('bx-hide');
+            password[key].setAttribute('type', 'password');
+        }
+    });
+}
