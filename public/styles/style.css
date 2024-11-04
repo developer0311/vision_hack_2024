@@ -405,6 +405,7 @@ footer i{
 /*-------------------------- SOCIAL.ejs --------------------------*/
 
 .social-container{
+    position: relative;
     width: 700px;
     padding: 10px 25px;
 }
@@ -425,9 +426,6 @@ footer i{
     display: flex;
     justify-content: center;
     margin-bottom: 10px;
-    /* padding: 20px;
-    box-shadow: 0px 0px 18px 3px #363333;
-    border-radius: 19px; */
 }
 
 .social-container .post .post-image img{
@@ -472,6 +470,28 @@ footer i{
     white-space: nowrap;
     width: 0%; /* This will be dynamically set */
 }
+
+.user-control-options{
+    position: fixed;
+    bottom: 70px;
+    left: calc((100vw - 700px) / 2);
+    height: 60px;
+    width: 80px;
+    margin: 10px auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px 1px #000;
+}
+
+.user-control-options .add-new-post i{
+    font-size: 30px;
+}
+
+
+
 
 /*-------------------------- POST_EDIT.ejs --------------------------*/
 

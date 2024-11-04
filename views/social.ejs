@@ -1,35 +1,36 @@
 <%- include('partials/header') %>
 
     <section class="social-container">
-        <% for(let i=0; i < 5; i++) { %>
-            <div class="post" data-rating="<%= (Math.random() * 5).toFixed(1) %>">
-                <!-- Random rating between 0 and 5 -->
+            <% posts.forEach(post => { %>
+             
+            
+            <div class="post" data-rating="<%= post.rating %>">
+                
                 <div class="profile">
-                    <p>developer0311</p>
+                    <p><%= post.username %></p>
                 </div>
                 <div class="post-image">
-                    <img src="https://rukminim2.flixcart.com/image/612/612/xif0q/headphone/t/n/x/buds-air-6-realme-original-imah2hygm9gasqft.jpeg?q=70"
+                    <img src="<%= post.post_image_url %>"
                         alt="">
                 </div>
                 <div class="post-tags">
                     <div class="tags">
-                        <div class="eco-friendly not">
+                        <div class="eco-friendly <%= post.eco_friendly === 0 ? 'not' : post.eco_friendly === 1 ? 'partial' : 'fully' %>">
                             <p>Eco Friendly</p>
                             <img src="/images/eco-friendly.png" class="tag-image" alt="">
                         </div>
-                        <div class="recycled partial">
+                        <div class="recycled <%= post.recycled === 0 ? 'not' : post.recycled === 1 ? 'partial' : 'fully' %>">
                             <p>Recycled</p>
                             <img src="/images/recycled.png" class="tag-image" alt="">
                         </div>
-                        <div class="locally-sourced fully">
+                        <div class="locally-sourced <%= post.locally_sourced === 0 ? 'not' : post.locally_sourced === 1 ? 'partial' : 'fully' %>">
                             <p>Locally Sourced</p>
                             <img src="/images/locally-sourced.png" class="tag-image" alt="">
                         </div>
                     </div>
                 </div>
                 <div class="post-caption">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Iste ea dolorum suscipit deserunt ullam
-                        sapiente cupiditate sequi eligendi. At repudiandae porro, dolorem velit a laboriosam.</p>
+                    <p><%= post.post_text %></p>
                 </div>
                 <div class="post-rating">
                     <div class="star-rating">
@@ -46,8 +47,19 @@
                     <i class='bx bx-message-rounded-dots'></i>
                 </div>
             </div>
-            <% } %>
+            <% }) %>
+            <br>
+            <br>
+            <div class="user-control-options">
+                <div class="add-new-post">
+                    <a href="/post-edit?" title="New Post">
+                        <i class='bx bx-plus-circle'></i>
+                    </a>
+                </div>
+            </div>
     </section>
+
+    
 
     <script>
         function setStarRatings() {

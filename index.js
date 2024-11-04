@@ -140,6 +140,43 @@ let handleCloudinaryProfileImageUpload = async (filePath, fileName) => {
   }
 };
 
+let handleCloudinaryPostImageUpload = async (filePath, fileName) => {
+  try {
+    // Set the public ID to include the destination folder
+    const publicId = `${fileName}`;
+    const folderPath = "eco_e-com_social/post_images";
+
+    // Upload to Cloudinary
+    const uploadResult = await cloudinary.uploader.upload(filePath, {
+      public_id: publicId,
+      folder: folderPath,
+    });
+
+    // Optimize the image (fetch_format and quality auto)
+    const optimizeUrl = cloudinary.url(publicId, {
+      fetch_format: "auto",
+      quality: "auto",
+    });
+
+    // Auto-crop the image
+    const autoCropUrl = cloudinary.url(publicId, {
+      crop: "crop",
+      gravity: "center",
+      width: 500, // Set width (same as height for square crop)
+      height: 500,
+    });
+
+    return {
+      uploadResult,
+      optimizeUrl,
+      autoCropUrl,
+    };
+  } catch (error) {
+    console.error("Error uploading to Cloudinary:", error);
+    throw error;
+  }
+};
+
 let handleCloudinaryImageDelete = async (public_id) => {
   cloudinary.uploader
     .destroy([public_id], { type: "upload", resource_type: "image" })
@@ -199,7 +236,7 @@ app.get("/home", async (req, res) => {
   if (req.isAuthenticated()) {
     try {
       const user = req.user;
-      let username = get_username(user.email);
+      let username = user.username;
       let profileImageUrl = req.user.profile_image_url;
       const e_result = await db.query(
         "SELECT * FROM products WHERE category = $1",
@@ -363,27 +400,66 @@ app.post("/cart/checkout", async (req, res) => {
 //-------------------------- SOCIAL Routes --------------------------//
 
 app.get("/social", async (req, res) => {
+  // if (!req.isAuthenticated()) {
+  //   return res.redirect("/login"); // Redirect to login if not authenticated
+  // }
+
   active_page("social");
   const username = req.isAuthenticated()
     ? get_username(req.user.email)
     : "Guest"; // Check if the user is authenticated
-  let profileImageUrl = req.isAuthenticated()? req.user.profile_image_url: favicon;
+  let profileImageUrl = req.isAuthenticated()
+    ? req.user.profile_image_url
+    : favicon;
+
+  let post_result = await db.query(`
+    SELECT 
+        up.id,
+        u.username,
+        u.profile_image_url,
+        up.image_url AS post_image_url, -- Use image_url from user_posts
+        p.eco_friendly,
+        p.recycled,
+        p.locally_sourced,
+        p.rating,
+        up.post_text,
+        up.likes_count,
+        up.comments_count,
+        up.created_at
+    FROM 
+        user_posts up
+    JOIN 
+        users u ON up.user_id = u.id
+    LEFT JOIN 
+        products p ON up.product_id = p.id
+    ORDER BY 
+        up.created_at DESC
+    LIMIT 10;
+`);
+
+
   res.render(__dirname + "/views/social.ejs", {
     profile_name: username,
     homeActive: home_active,
     cartActive: cart_active,
     profileImageUrl: profileImageUrl,
     socialActive: social_active,
+    posts: post_result.rows,
   });
 });
 
 app.get("/post-edit", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.redirect("/login"); // Redirect to login if not authenticated
+  }
   active_page("social");
 
   const username = req.isAuthenticated()
     ? get_username(req.user.email)
     : "Guest";
-  let profileImageUrl = user.profileImageUrl;
+  let profileImageUrl = req.isAuthenticated()
+    ? req.user.profile_image_url
+    : favicon;
   const action = req.query.action;
   const productId = req.query.productId;
   let product = null;
@@ -407,17 +483,58 @@ app.get("/post-edit", async (req, res) => {
   });
 });
 
-app.post("/share-post", async (req, res) => {
-  active_page("social");
-  const username = req.isAuthenticated()
-    ? get_username(req.user.email)
-    : "Guest";
-  let profileImageUrl = req.user.profile_image_url;
-  const productId = req.body.productId;
-  const postImage = req.body.post_image; // Image URL when sharing existing product image
-  const postContent = req.body["post-content"]; // Post text content
-  console.log(productId, postImage, postContent);
-});
+app.post(
+  "/share-post",
+  upload.fields([{ name: "new-image", maxCount: 1 }]),
+  async (req, res) => {
+    // Uncomment if authentication check is needed
+    // if (!req.isAuthenticated()) {
+    //   return res.redirect("/login"); // Redirect to login if not authenticated
+    // }
+    active_page("social");
+
+    const userId = req.user.id; // Assuming req.user contains authenticated user info
+    const productId = req.body.productId;
+    const postContent = req.body["post-content"]; // Post text content
+    let posts = await db.query("SELECT * FROM user_posts")
+    let post_number = posts.rows.length + 1
+
+    // Determine the post image
+    let postImage;
+    if (req.body.post_image) {
+      postImage = req.body.post_image; // Use the existing product image URL
+    } else if (req.files && req.files["new-image"]) {
+      const uploadedFile = req.files["new-image"][0];
+      let post_image_name = `${post_number}${uploadedFile.originalname}`
+      try {
+        const postImageUploadResult = await handleCloudinaryPostImageUpload(
+          path.resolve(uploadedFile.path),
+          path.basename(post_image_name, path.extname(post_image_name)) // Using user ID for unique filename
+        );
+        postImage = postImageUploadResult.uploadResult.secure_url; // Cloudinary URL
+
+        // Delete the local file after successful upload
+        deleteFile(path.resolve(uploadedFile.path));
+        
+      } catch (uploadError) {
+        console.error("Image upload failed:", uploadError);
+        return res.status(500).send("Image upload failed.");
+      }
+    } else {
+      return res.status(400).send("Image is required for the post.");
+    }
+
+    // Save the post to the database
+    try {
+      let result = await db.query(`INSERT INTO user_posts (user_id, product_id, post_text, image_url) VALUES ($1, $2, $3, $4) RETURNING *;`, [userId, productId || null, postContent, postImage || null]);
+
+      res.redirect("/social"); // Redirect to social page after saving the post
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Failed to save the post.");
+    }
+  }
+);
 
 //-------------------------- LOGIN Route --------------------------//
 
@@ -439,13 +556,24 @@ app.get("/login", (req, res) => {
   });
 });
 
-app.post(
-  "/login",
-  passport.authenticate("local", {
-    successRedirect: "/home",
-    failureRedirect: "/login",
-  })
-);
+app.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      return next(err); // Handle error
+    }
+    if (!user) {
+      // If the user is not found or password is incorrect, flash the error and redirect to login
+      req.flash("error", info.message || "User not found, please register.");
+      return res.redirect("/login"); // Redirect back to the login page
+    }
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err); // Handle error
+      }
+      return res.redirect("/home"); // Successful login
+    });
+  })(req, res, next); // Call passport.authenticate with req, res, next
+});
 
 //-------------------------- REGISTER Route --------------------------//
 
@@ -472,7 +600,7 @@ app.post(
   upload.fields([{ name: "profile_photo", maxCount: 1 }]), // Adjusted to match the input name in the form
   async (req, res) => {
     active_page("home");
-    const { email, password, username, mobile_number, address, pincode } =
+    const { username, email, password, mobile_number, address, pincode } =
       req.body;
 
     try {
@@ -523,7 +651,7 @@ app.post(
             [
               username,
               coverImageUploadResult.uploadResult.public_id,
-              coverImageUploadResult.uploadResult.secure_url, // Store Cloudinary URL for the image
+              coverImageUploadResult.uploadResult.secure_url,
               hash,
               mobile_number,
               email,
@@ -575,29 +703,28 @@ passport.use(
   "local",
   new Strategy(async function verify(username, password, cb) {
     try {
-      const result = await db.query("SELECT * FROM users WHERE email = $1 ", [
+      const result = await db.query("SELECT * FROM users WHERE email = $1", [
         username,
       ]);
       if (result.rows.length > 0) {
         const user = result.rows[0];
         const storedHashedPassword = user.password;
-        bcrypt.compare(password, storedHashedPassword, (err, valid) => {
-          if (err) {
-            console.error("Error comparing passwords:", err);
-            return cb(err);
-          } else {
-            if (valid) {
-              return cb(null, user);
-            } else {
-              return cb(null, false);
-            }
-          }
-        });
+
+        // Use promise with bcrypt.compare for better error handling
+        const valid = await bcrypt.compare(password, storedHashedPassword);
+        if (valid) {
+          return cb(null, user);
+        } else {
+          return cb(null, false, {
+            message: "Invalid password. Please try again.",
+          });
+        }
       } else {
-        return cb("User not found");
+        return cb(null, false, { message: "User not found. Please register." });
       }
     } catch (err) {
       console.log(err);
+      return cb(err); // Handle unexpected errors
     }
   })
 );
@@ -653,7 +780,6 @@ app.get(`/admin-login`, (req, res) => {
     cartActive: cart_active,
     socialActive: social_active,
     profileImageUrl: profileImageUrl,
-
   });
 });
 
