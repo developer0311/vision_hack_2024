@@ -24,6 +24,7 @@ const admin_password = process.env.ADMIN_PASSWORD;
 const auth_cb_url = process.env.GOOGLE_CB_URL;
 let home_active = "my-active";
 let cart_active = "";
+let social_active = "";
 
 app.use(
   session({
@@ -88,9 +89,15 @@ let active_page = (pageName) => {
   if (pageName == "home") {
     home_active = "my-active";
     cart_active = "";
+    social_active = "";
   } else if (pageName == "cart") {
     home_active = "";
     cart_active = "my-active";
+    social_active = "";
+  } else if (pageName == "social") {
+    home_active = "";
+    cart_active = "";
+    social_active = "my-active";
   }
 };
 
@@ -99,7 +106,7 @@ let handleCloudinaryImageUpload = async (filePath, fileName) => {
   try {
     // Set the public ID to include the destination folder
     const publicId = `${fileName}`;
-    const folderPath = "book_lib_1/images/cover_images";
+    const folderPath = "eco_e-com_social/post_images ";
 
     // Upload to Cloudinary
     const uploadResult = await cloudinary.uploader.upload(filePath, {
@@ -202,6 +209,7 @@ app.get("/", (req, res) => {
     profile_name: username,
     homeActive: home_active,
     cartActive: cart_active,
+    socialActive: social_active,
   }); // Render the home view
 });
 
@@ -240,6 +248,7 @@ app.get("/home", async (req, res) => {
         profile_name: username || "Guest",
         homeActive: home_active,
         cartActive: cart_active,
+        socialActive: social_active,
       });
     } catch (err) {
       console.log(err);
@@ -265,15 +274,15 @@ app.get("/specific", async (req, res) => {
     const product = result.rows[0];
 
     if (product) {
-      const user = req.user;
-      // console.log(user.email)
+      let user = req.user;
       let username = get_username(user.email);
-      console.log(username)
+      // console.log(username)
       res.render(__dirname + "/views/specific.ejs", {
         product: product,
-        profile_name: username || "Guest",
+        profile_name: username,
         homeActive: home_active,
         cartActive: cart_active,
+        socialActive: social_active,
       });
     } else {
       res.status(404).send("Product not found");
@@ -311,6 +320,7 @@ app.get("/cart", async (req, res) => {
         profile_name: username || "Guest", // Ensure username is defined here
         homeActive: home_active,
         cartActive: cart_active,
+        socialActive: social_active,
       });
     } catch (err) {
       console.error("Error fetching cart items:", err);
@@ -372,6 +382,57 @@ app.post("/cart/checkout", async (req, res) => {
   }
 });
 
+
+//-------------------------- SOCIAL Routes --------------------------//
+
+app.get("/social", async (req, res)=>{
+  active_page("social")
+  const username = req.isAuthenticated()
+    ? get_username(req.user.email)
+    : "Guest"; // Check if the user is authenticated
+  res.render(__dirname + "/views/social.ejs", {
+    profile_name: username,
+    homeActive: home_active,
+    cartActive: cart_active,
+    socialActive: social_active,
+  })
+})
+
+app.get("/post-edit", async (req, res) => {
+  active_page("social");
+
+  const username = req.isAuthenticated() ? get_username(req.user.email) : "Guest";
+  const action = req.query.action;
+  const productId = req.query.productId;
+  let product = null;
+
+  // Check if action is "share" and get product details if necessary
+  if (action === "share" && productId) {
+    let result = await db.query("SELECT * FROM products WHERE id = $1", [
+      productId,
+    ]); // Fetch product details by ID
+    product = result.rows[0];
+  }
+
+  res.render(__dirname + "/views/post_edit.ejs", {
+    profile_name: username,
+    homeActive: home_active,
+    cartActive: cart_active,
+    socialActive: social_active,
+    product, // Pass product data if available
+    action
+  });
+});
+
+app.post("/share-post", async (req, res) => {
+  active_page("social");
+  const username = req.isAuthenticated() ? get_username(req.user.email) : "Guest";
+  const productId = req.body.productId;
+  const postImage = req.body.post_image; // Image URL when sharing existing product image
+  const postContent = req.body["post-content"]; // Post text content
+  console.log(productId, postImage, postContent)
+});
+
 //-------------------------- LOGIN Route --------------------------//
 
 app.get("/login", (req, res) => {
@@ -383,11 +444,11 @@ app.get("/login", (req, res) => {
     profile_name: username,
     homeActive: home_active,
     cartActive: cart_active,
+    socialActive: social_active,
   });
 });
 
-app.post(
-  "/login",
+app.post("/login",
   passport.authenticate("local", {
     successRedirect: "/home",
     failureRedirect: "/login",
@@ -405,50 +466,63 @@ app.get("/register", (req, res) => {
     profile_name: username,
     homeActive: home_active,
     cartActive: cart_active,
+    socialActive: social_active,
   });
 });
 
 app.post("/register", async (req, res) => {
-  const email = req.body.username;
-  const password = req.body.password;
+  active_page("home");
+  const { email, password, username, mobile_number, address, pincode } = req.body;
 
   try {
-    const checkResult = await db.query("SELECT * FROM users WHERE email = $1", [
-      email,
-    ]);
+    // Check if the email or username already exists
+    const checkResult = await db.query("SELECT * FROM users WHERE email = $1 OR username = $2", [email, username]);
 
+    // Determine the error type
     if (checkResult.rows.length > 0) {
-      res.redirect("/login");
-    } else {
-      bcrypt.hash(password, saltRounds, async (err, hash) => {
-        if (err) {
-          console.error("Error hashing password:", err);
-        } else {
-          const result = await db.query(
-            "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING *",
-            [email, hash]
-          );
-          const user = result.rows[0];
-          req.login(user, (err) => {
-            console.log("success");
-            res.redirect("/home");
-          });
-        }
-      });
+      let errorMessage;
+      if (checkResult.rows.some(user => user.username === username)) {
+        errorMessage = "Username must be unique.";
+      } else {
+        errorMessage = "Email is already registered.";
+      }
+      return res.render("register", { errorMessage: errorMessage, profile_name: username,
+        homeActive: home_active,
+        cartActive: cart_active,
+        socialActive: social_active, }); // Render the registration page with the error message
     }
+
+    // Hash the password before storing it
+    bcrypt.hash(password, saltRounds, async (err, hash) => {
+      if (err) {
+        console.error("Error hashing password:", err);
+        return res.status(500).send("Internal Server Error");
+      } else {
+        // Insert new user into the database
+        const result = await db.query(
+          `INSERT INTO users (username, password, mobile_number, email, address, pincode) 
+           VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+          [username, hash, mobile_number, email, address, pincode]
+        );
+        const user = result.rows[0];
+
+        // Log in the user after successful registration
+        req.login(user, (err) => {
+          if (err) {
+            console.error("Login error:", err);
+            return res.status(500).send("Internal Server Error");
+          }
+          console.log("Registration successful, user logged in.");
+          res.redirect("/home");
+        });
+      }
+    });
   } catch (err) {
-    console.log(err);
+    console.error("Error during registration:", err);
+    res.status(500).send("Internal Server Error");
   }
 });
 
-//-------------------------- SPECIFIC ITEM Route --------------------------//
-
-// app.get("/specific", (req, res) => {
-//   active_page("home");
-//   res.render(__dirname + "/views/specific.ejs", {
-//     profile_name: username || "Guest",
-//   });
-// });
 
 //-------------------------- LOGOUT Route --------------------------//
 
@@ -497,8 +571,7 @@ passport.use("local",
   })
 );
 
-passport.use(
-  "google",
+passport.use("google",
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
@@ -543,6 +616,7 @@ app.get(`/admin-login`, (req, res) => {
     profile_name: "Admin",
     homeActive: home_active,
     cartActive: cart_active,
+    socialActive: social_active,
   });
 });
 
@@ -638,76 +712,108 @@ app.post("/admin/products/create", async (req, res) => {
   try {
     const {
       name,
-      max_price,
+      company_name,
+      production_location,
+      actual_price,
       price,
-      offer_percent,
+      discount_percent,
       description,
       image_url,
       category,
+      eco_friendly,
+      recycled,
+      locally_sourced
     } = req.body;
 
-
     const result = await db.query(
-      `INSERT INTO products (name, max_price, price, offer_percent, description, image_url, category)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO products (name, company_name, production_location, actual_price, price, discount_percent, description, image_url, category, eco_friendly, recycled, locally_sourced)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
         RETURNING *`,
       [
         name,
-      max_price,
-      price,
-      offer_percent,
-      description,
-      image_url,
-      category, // Default to 10 if not provided
+        company_name,
+        production_location,
+        actual_price,
+        price,
+        discount_percent,
+        description,
+        image_url,
+        category,
+        eco_friendly,    // Pass the eco-friendly value
+        recycled,        // Pass the recycled value
+        locally_sourced  // Pass the locally sourced value
       ]
     );
+
+    // Redirect after successful insertion
     res.redirect(`/admin/${admin_password}`);
   } catch (error) {
+    console.error("Error creating product:", error);
     res.status(500).json({ error: error.message });
   }
 });
 
+
 //------------------------------------------------------ ADMIN EDIT product ------------------------------------------------------//
 
 app.post("/admin/products/update/:productId", async (req, res) => {
-    const productId = req.params.productId; // Get the productId from the request parameters
-    const {
-      name,
-      max_price,
-      price,
-      offer_percent,
-      description,
-      image_url,
-      category,
-    } = req.body;
+  const productId = req.params.productId;
+  const {
+    name,
+    company_name,
+    production_location,
+    actual_price,
+    price,
+    discount_percent,
+    description,
+    image_url,
+    category,
+    eco_friendly,
+    recycled,
+    locally_sourced,
+    rating,
+  } = req.body;
 
+  try {
     // Update the product in the database
     const updateResult = await db.query(
       `UPDATE products
-           SET name = $1, max_price = $2, price = $3, offer_percent = $4,
-               description = $5, image_url = $6, category = $7 
-               WHERE id = $8 RETURNING *`,
+           SET name = $1, company_name = $2, production_location = $3, actual_price = $4,
+               price = $5, discount_percent = $6, description = $7, image_url = $8,
+               category = $9, eco_friendly = $10, recycled = $11, locally_sourced = $12,
+               rating = $13 
+           WHERE id = $14 RETURNING *`,
       [
         name,
-        max_price,
+        company_name,
+        production_location,
+        actual_price,
         price,
-        offer_percent,
+        discount_percent,
         description,
         image_url,
         category,
+        eco_friendly,
+        recycled,
+        locally_sourced,
+        rating,
         productId,
       ]
     );
 
     if (updateResult.rowCount > 0) {
-      // product updated successfully
+      // Product updated successfully
       res.redirect(`/admin/${admin_password}/products`); // Redirect to the products management page
     } else {
-      // product not found
-      res.status(404).send("product not found");
+      // Product not found
+      res.status(404).send("Product not found");
     }
+  } catch (error) {
+    console.error("Error updating product:", error);
+    res.status(500).send("Server error");
   }
-);
+});
+
 
 
 //------------------------------------------------------ DELETE product ------------------------------------------------------//

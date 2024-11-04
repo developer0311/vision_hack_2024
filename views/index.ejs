@@ -62,6 +62,7 @@
         <button id="leftBtn" class="carousel-btn" style="display: none;">&#10094;</button>
         <div class="home-product-cards">
             <% for(let i = 0; i < 10; i++) { %>
+              
                 <div class="card-items">
                     <a href="/specific?id=<%= electronics[i].id %>" class="card">
                         <div class="img-container">
@@ -73,8 +74,10 @@
                         </div>
                     </a>
                 </div>
-            <% } %>
+                <% } %>
         </div>
+
+        
         <button id="rightBtn" class="carousel-btn">&#10095;</button>
     </div>
 </section>

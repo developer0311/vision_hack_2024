@@ -1,0 +1,74 @@
+<%- include('partials/header') %>
+
+    <section class="social-container">
+        <% for(let i=0; i < 5; i++) { %>
+            <div class="post" data-rating="<%= (Math.random() * 5).toFixed(1) %>">
+                <!-- Random rating between 0 and 5 -->
+                <div class="profile">
+                    <p>developer0311</p>
+                </div>
+                <div class="post-image">
+                    <img src="https://rukminim2.flixcart.com/image/612/612/xif0q/headphone/t/n/x/buds-air-6-realme-original-imah2hygm9gasqft.jpeg?q=70"
+                        alt="">
+                </div>
+                <div class="post-tags">
+                    <div class="tags">
+                        <div class="eco-friendly not">
+                            <p>Eco Friendly</p>
+                            <img src="/images/eco-friendly.png" class="tag-image" alt="">
+                        </div>
+                        <div class="recycled partial">
+                            <p>Recycled</p>
+                            <img src="/images/recycled.png" class="tag-image" alt="">
+                        </div>
+                        <div class="locally-sourced fully">
+                            <p>Locally Sourced</p>
+                            <img src="/images/locally-sourced.png" class="tag-image" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="post-caption">
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Iste ea dolorum suscipit deserunt ullam
+                        sapiente cupiditate sequi eligendi. At repudiandae porro, dolorem velit a laboriosam.</p>
+                </div>
+                <div class="post-rating">
+                    <div class="star-rating">
+                        <div class="star-rating-bg">
+                            ★★★★★
+                        </div>
+                        <div class="star-rating-fg">
+                            ★★★★★
+                        </div>
+                    </div>
+                </div>
+                <div class="post-like-comment">
+                    <i class='bx bx-heart'></i>
+                    <i class='bx bx-message-rounded-dots'></i>
+                </div>
+            </div>
+            <% } %>
+    </section>
+
+    <script>
+        function setStarRatings() {
+            const posts = document.querySelectorAll('.post');
+
+            posts.forEach(post => {
+                const rating = parseFloat(post.getAttribute('data-rating'));
+                const starRatingFg = post.querySelector('.star-rating-fg');
+                const percentage = (rating / 5) * 100; // Convert rating to percentage
+                starRatingFg.style.width = `${percentage}%`;
+            });
+        }
+
+        // Initialize the star ratings for each post
+        setStarRatings();
+
+
+
+    </script>
+
+
+
+
+    <%- include('partials/footer') %>

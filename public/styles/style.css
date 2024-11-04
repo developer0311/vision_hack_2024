@@ -41,11 +41,16 @@ h3{
 
 p,
 a,
+li,
 label,
 input,
 button,
 textarea{
     font-family: "Montserrat", sans-serif;
+}
+
+.my-active{
+    color: #000;
 }
 
 p{
@@ -57,13 +62,24 @@ main{
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-top: 30px;
 }
 
 section{
     width: 90vw;
-    margin: 0px auto 20px auto;
+    margin: 10px auto 20px auto;
     background-color: #fff;
+}
+
+.not{
+    background-color: #fd9c9c;
+}
+
+.partial{
+    background-color: #f4e28c;
+}
+
+.fully{
+    background-color: #8aeb97;
 }
 
 /*-------------------------- HEADER --------------------------*/
@@ -199,8 +215,6 @@ footer i{
 /*-------------------------- SPECIFIC.ejs --------------------------*/
 
 .specific-item{
-    /* min-height: calc((100vh - 70px - 97px - 200px));
-    margin-top: 80px; */
     display: flex;
     align-items: center;
     padding: 0px 20px;
@@ -220,6 +234,9 @@ footer i{
     margin-bottom: 30px;
     display: flex;
     justify-content: center;
+    padding: 20px;
+    box-shadow: 0px 0px 18px 3px #363333;
+    border-radius: 19px;
 }
 
 .specific-item .item-image img{
@@ -266,6 +283,31 @@ footer i{
     font-size: 25px;
 }
 
+.tags{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.tags > *{
+    margin-right: 20px;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 25px;
+}
+
+.tags p{
+    margin: 0;
+    margin-right: 10px;
+
+}
+
+.tags .tag-image{
+    width: 30px;
+}
+
 .specific-item .price-details .special{
     color: rgb(5, 189, 5);
     font-weight: bolder;
@@ -278,6 +320,7 @@ footer i{
 
 .specific-item .price-details .item-price > *{
     margin-right: 20px;
+    font-weight: bolder;
 }
 
 .specific-item .price-details .item-price .special-price{
@@ -286,11 +329,12 @@ footer i{
 
 .specific-item .item-details .price-details .item-price .actual-price{
     text-decoration: line-through;
+    opacity: 0.6;
+    
 }
 
 .specific-item .item-details .price-details .item-price .discount{
     color: rgb(5, 189, 5);
-    font-weight: bolder;
 }
 
 .specific-item .item-details .item-more-details ul{
@@ -324,8 +368,86 @@ footer i{
 }
 
 .cart_options > *{
-    width: 70px;
+    width: 90px;
     margin: 0px 5px;
+}
+
+
+/*-------------------------- SOCIAL.ejs --------------------------*/
+
+.social-container{
+    width: 700px;
+    padding: 10px 25px;
+}
+
+.social-container .post{
+    margin-bottom: 35px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.social-container .post > *{
+    width: 100%;
+}
+
+.social-container .post .post-image{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+    /* padding: 20px;
+    box-shadow: 0px 0px 18px 3px #363333;
+    border-radius: 19px; */
+}
+
+.social-container .post .post-image img{
+    width: 40%;
+}
+
+.social-container .post .post-tags{
+    margin-bottom: 10px;
+    
+}
+
+.social-container .post .post-tags .tags{
+    justify-content: center;
+}
+
+.social-container .post .post-tags .tags > *{
+    margin: 0 10px;
+}
+
+.social-container .post .post-like-comment i{
+    font-size: 30px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.star-rating {
+    position: relative;
+    font-size: 30px;
+    width: max-content;
+}
+
+.star-rating-bg {
+    color: #d3d3d3; /* Unfilled stars color */
+}
+
+.star-rating-fg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #ff9e00; /* Filled stars color */
+    overflow: hidden;
+    white-space: nowrap;
+    width: 0%; /* This will be dynamically set */
+}
+
+/*-------------------------- POST_EDIT.ejs --------------------------*/
+
+.post-edit-container .post-image img{
+    width: 15%;
 }
 
 
@@ -334,10 +456,3 @@ footer i{
 .lr{
     margin-bottom: 20px;
 }
-
-
-
-
-
-
-

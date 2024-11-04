@@ -6,7 +6,7 @@
                 <img src="<%= product.image_url %>" alt="">
             </div>
             <div class="deal-option">
-                <a href="/cart/add?productId=<%= product.id %>" class="share-social"><i class='bx bxs-send' style='color:#ffffff'></i>Share on Social</a>
+                <a href="post-edit?action=share&productId=<%= product.id %>" class="share-social"><i class='bx bxs-send' style='color:#ffffff'></i>Share on Social</a>
                 <a href="/cart/add?productId=<%= product.id %>" class="cart"><i class='bx bx-cart-alt' style='color:#ffffff'></i>Add to cart</a>
                 <a href="" class="buy"><i class='bx bxs-hot' style='color:#ffffff'></i>Buy now</a>
             </div>
@@ -18,15 +18,15 @@
             </div>
 
             <div class="tags">
-                <div class="eco-friendly not">
+                <div class="eco-friendly <%= product.ecofriendly === 0 ? 'not' : product.ecofriendly === 1 ? 'partial' : 'fully' %>">
                     <p>Eco Friendly</p>
                     <img src="/images/eco-friendly.png" class="tag-image" alt="">
                 </div>
-                <div class="recycled partial">
+                <div class="recycled <%= product.recycled === 0 ? 'not' : product.recycled === 1 ? 'partial' : 'fully' %>">
                     <p>Recycled</p>
                     <img src="/images/recycled.png" class="tag-image" alt="">
                 </div>
-                <div class="locally-sourced fully">
+                <div class="locally-sourced <%= product.locally_sourced === 0 ? 'not' : product.locally_sourced === 1 ? 'partial' : 'fully' %>">
                     <p>Locally Sourced</p>
                     <img src="/images/locally-sourced.png" class="tag-image" alt="">
                 </div>
@@ -37,7 +37,7 @@
                 <div class="item-price">
                     <p class="special-price">₹<%= product.price %></p>
                     <p class="actual-price">₹<%= product.actual_price %></p>
-                    <p class="discount">%<%= product.discount_percent %></p>
+                    <p class="discount">%<%= product.discount_percent %> off</p>
                 </div>
             </div>
 

@@ -1,0 +1,36 @@
+<%- include('partials/header') %>
+
+<div class="container">
+    <div class="post-edit-container card shadow-lg p-4">
+        <h2 class="text-center mb-4">Edit Your Post</h2>
+        
+        <!-- Form with action 'share-post' and method 'POST' -->
+        <form action="/share-post" method="POST" enctype="multipart/form-data">
+            <% if (action === "share" && product) { %>
+                <!-- Show the product image for "Share on Social" -->
+                <input type="text" name="productId" value="<%= product.id %>" style="display: none;">
+                <input type="text" name="post_image" value="<%= product.image_url %>" style="display: none;">
+                <div class="post-image text-center mb-4">
+                    <img src="<%= product.image_url %>" alt="<%= product.name %>" class="img-fluid rounded">
+                </div>
+            <% } else { %>
+                <!-- Show file input for "New Post" -->
+                <div class="upload-image mb-4">
+                    <label for="new-image" class="form-label">Upload Your Image:</label>
+                    <input type="file" id="new-image" name="new-image" class="form-control">
+                </div>
+            <% } %>
+
+            <div class="post-content mb-4">
+                <textarea name="post-content" class="form-control" placeholder="Write something..." rows="4"></textarea>
+            </div>
+            
+            <div class="text-center">
+                
+                <button type="submit" class="btn btn-primary btn-lg">Share Post</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
