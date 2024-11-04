@@ -24,6 +24,8 @@ CREATE TABLE products (
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
+    public_id TEXT NOT NULL,
+    profile_image_url TEXT NOT NULL,
     password TEXT NOT NULL,
     mobile_number VARCHAR(20) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -114,3 +116,14 @@ CREATE TABLE user_follows (
     followed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (follower_id, followee_id)
 );
+
+
+
+DROP TABLE cart;
+DROP TABLE post_comments;
+DROP TABLE review;
+DROP TABLE post_likes;
+DROP TABLE user_follows;
+DROP TABLE user_posts;
+DROP TABLE users;
+DROP TABLE admins;

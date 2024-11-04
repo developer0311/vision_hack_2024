@@ -82,6 +82,26 @@ section{
     background-color: #8aeb97;
 }
 
+
+
+.user-image {
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+    overflow: hidden; /* Hide overflow to crop */
+    position: relative; /* Position relative for absolute child */
+}
+
+.user-image img {
+    width: auto; /* Maintain the original width aspect ratio */
+    height: 100%; /* Fill the container height */
+    position: absolute; /* Position for precise placement */
+    top: 50%; /* Move down to the middle */
+    left: 50%; /* Move right to the middle */
+    transform: translate(-50%, -50%); /* Center the image */
+}
+
+
 /*-------------------------- HEADER --------------------------*/
 
 .navbar{

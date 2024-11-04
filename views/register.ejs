@@ -15,12 +15,18 @@
           <% } %>
 
           <!-- Makes POST request to /register route -->
-          <form class="l-g-form" action="/register" method="POST">
+          <form class="l-g-form" action="/register" method="POST" enctype="multipart/form-data">
             <!-- Username -->
             <div class="form-group">
               <label for="username">Username</label>
               <input type="text" class="form-control" name="username" required>
             </div>
+
+            <!-- New Profile Image Upload Section -->
+            <div class="mb-3">
+              <label for="profile_photo" class="form-label">Profile Photo:</label>
+              <input type="file" id="profile_photo" name="profile_photo" class="form-control" accept="image/*" required>
+          </div>
 
             <!-- Email -->
             <div class="form-group">
