@@ -611,7 +611,6 @@ app.post(
 app.get("/like", async (req, res) => {
   const userId = req.user.id; // Assuming user ID is stored in session
   const postId = req.query.id; // Get post ID from query parameters
-  console.log(userId)
 
   if (!userId || !postId) {
     return res.status(400).send("User ID and Post ID are required.");

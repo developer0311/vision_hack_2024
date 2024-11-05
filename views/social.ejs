@@ -1,121 +1,110 @@
 <%- include('partials/header') %>
 
-    <section class="social-container">
-            <% posts.forEach(post => { %>
-             
-            
-            <div class="post" data-rating="<%= post.rating %>">
-                
-                <div class="profile">
-                    <img src="<%= post.profile_image_url %>" alt="" style="width: 30px; height: 30px; border-radius: 50%;">
-                    <p><%= post.username %></p>
-                </div>
-                <div class="post-image">
-                    <img src="<%= post.post_image_url %>"
-                        alt="">
-                </div>
-                <div class="post-tags">
-                    <div class="tags">
-                        <div class="eco-friendly <%= post.eco_friendly === 0 ? 'not' : post.eco_friendly === 1 ? 'partial' : 'fully' %>">
-                            <p>Eco Friendly</p>
-                            <img src="/images/eco-friendly.png" class="tag-image" alt="">
-                        </div>
-                        <div class="recycled <%= post.recycled === 0 ? 'not' : post.recycled === 1 ? 'partial' : 'fully' %>">
-                            <p>Recycled</p>
-                            <img src="/images/recycled.png" class="tag-image" alt="">
-                        </div>
-                        <div class="locally-sourced <%= post.locally_sourced === 0 ? 'not' : post.locally_sourced === 1 ? 'partial' : 'fully' %>">
-                            <p>Locally Sourced</p>
-                            <img src="/images/locally-sourced.png" class="tag-image" alt="">
-                        </div>
+<section class="social-container">
+    <% posts.forEach((post, index) => { %> <!-- Use index to create unique IDs for each post -->
+        <div class="post" data-rating="<%= post.rating %>">
+            <div class="profile">
+                <img src="<%= post.profile_image_url %>" alt="" style="width: 30px; height: 30px; border-radius: 50%;">
+                <p><%= post.username %></p>
+            </div>
+            <div class="post-image">
+                <img src="<%= post.post_image_url %>" alt="">
+            </div>
+            <div class="post-tags">
+                <div class="tags">
+                    <div class="eco-friendly <%= post.eco_friendly === 0 ? 'not' : post.eco_friendly === 1 ? 'partial' : 'fully' %>">
+                        <p>Eco Friendly</p>
+                        <img src="/images/eco-friendly.png" class="tag-image" alt="">
                     </div>
-                </div>
-                <div class="post-caption">
-                    <p><%= post.post_text %></p>
-                </div>
-                <div class="post-rating">
-                    <div class="star-rating">
-                        <div class="star-rating-bg">
-                            ★★★★★
-                        </div>
-                        <div class="star-rating-fg">
-                            ★★★★★
-                        </div>
+                    <div class="recycled <%= post.recycled === 0 ? 'not' : post.recycled === 1 ? 'partial' : 'fully' %>">
+                        <p>Recycled</p>
+                        <img src="/images/recycled.png" class="tag-image" alt="">
                     </div>
-                </div>
-                <div class="post-like-comment">
-                    <div class="l-c-s-d-option">
-                        <a href="/like?id=<%= post.post_id %>">
-                                <i class="bx <%= post.user_liked ? 'bxs-heart' : 'bx-heart' %>" style='color:#ff0000' title="<%= post.user_liked ? 'Unlike' : 'Like' %>"></i>
-                            <span>
-                                <%= post.likes_count %>
-                            </span>
-                        </a>
-                    </div>
-                    <div class="l-c-s-d-option">
-                        <i class='bx bx-message-rounded-dots' title="Comment"></i>
-                        <span>
-                            <%= post.comments_count %>
-                        </span>
-                    </div>
-                </div>
-                <div class="comment-section">
-                    <form action="/comment" method="POST">
-                        <input type="hidden" name="postId" value="<%= post.post_id %>" />
-                        <input type="text" name="comment" class="comment-input" placeholder="Write a comment..." required />
-                        <button type="submit" class="submit-comment"><i class='bx bxs-send'
-                                style='color:#ffffff'></i></button>
-                    </form>
-                
-                    <!-- Scrollable Comment List -->
-                    <div class="comments-list">
-                        <ul class="user-comments">
-                            <% post.comments.forEach(comment=> { %>
-                                <li class="user-comment">
-                                    <!-- <i class='bx bxs-bullseye'></i> -->
-                                    <img src="<%= comment.profile_image_url %>" alt="" style="width: 30px; height: 30px; border-radius: 50%;"> 
-                                    <strong><%= comment.username %></strong>
-                                    <%= comment.comment %>
-                                </li>
-                                <% }) %>
-                        </ul>
+                    <div class="locally-sourced <%= post.locally_sourced === 0 ? 'not' : post.locally_sourced === 1 ? 'partial' : 'fully' %>">
+                        <p>Locally Sourced</p>
+                        <img src="/images/locally-sourced.png" class="tag-image" alt="">
                     </div>
                 </div>
             </div>
-            <% }) %>
-            <br>
-            <br>
-            <div class="user-control-options">
-                <div class="add-new-post">
-                    <a href="/post-edit?" title="New Post">
-                        <i class='bx bx-plus-circle'></i>
+            <div class="post-caption">
+                <p><%= post.post_text %></p>
+            </div>
+            <div class="post-rating">
+                <div class="star-rating">
+                    <div class="star-rating-bg">
+                        ★★★★★
+                    </div>
+                    <div class="star-rating-fg">
+                        ★★★★★
+                    </div>
+                </div>
+            </div>
+            <div class="post-like-comment">
+                <div class="l-c-s-d-option">
+                    <a href="/like?id=<%= post.post_id %>">
+                        <i class="bx <%= post.user_liked ? 'bxs-heart' : 'bx-heart' %>" style='color:#ff0000' title="<%= post.user_liked ? 'Unlike' : 'Like' %>"></i>
+                        <span><%= post.likes_count %></span>
                     </a>
                 </div>
+                <div class="l-c-s-d-option">
+                    <i class='bx bx-message-rounded-dots' title="Comment" onclick="toggleCommentSection('<%= post.post_id %>')"></i>
+                    <span><%= post.comments_count %></span>
+                </div>
             </div>
-    </section>
+            <div id="comment-section-<%= post.post_id %>" class="comment-section" style="display: none;">
+                <form action="/comment" method="POST">
+                    <input type="hidden" name="postId" value="<%= post.post_id %>" />
+                    <input type="text" name="comment" class="comment-input" placeholder="Write a comment..." required />
+                    <button type="submit" class="submit-comment"><i class='bx bxs-send' style='color:#ffffff'></i></button>
+                </form>
 
-    
+                <!-- Scrollable Comment List -->
+                <div class="comments-list">
+                    <ul class="user-comments">
+                        <% post.comments.forEach(comment => { %>
+                            <li class="user-comment">
+                                <img src="<%= comment.profile_image_url %>" alt="" style="width: 30px; height: 30px; border-radius: 50%;">
+                                <strong><%= comment.username %></strong> <%= comment.comment %>
+                            </li>
+                        <% }) %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    <% }) %>
+    <br><br>
+    <div class="user-control-options">
+        <div class="add-new-post">
+            <a href="/post-edit?" title="New Post">
+                <i class='bx bx-plus-circle'></i>
+            </a>
+        </div>
+    </div>
+</section>
 
-    <script>
-        function setStarRatings() {
-            const posts = document.querySelectorAll('.post');
+<script>
+    function setStarRatings() {
+        const posts = document.querySelectorAll('.post');
+        posts.forEach(post => {
+            const rating = parseFloat(post.getAttribute('data-rating'));
+            const starRatingFg = post.querySelector('.star-rating-fg');
+            const percentage = (rating / 5) * 100; // Convert rating to percentage
+            starRatingFg.style.width = `${percentage}%`;
+        });
+    }
 
-            posts.forEach(post => {
-                const rating = parseFloat(post.getAttribute('data-rating'));
-                const starRatingFg = post.querySelector('.star-rating-fg');
-                const percentage = (rating / 5) * 100; // Convert rating to percentage
-                starRatingFg.style.width = `${percentage}%`;
-            });
+    // Initialize the star ratings for each post
+    setStarRatings();
+
+    // Function to toggle comment section visibility
+    function toggleCommentSection(postId) {
+        const commentSection = document.getElementById(`comment-section-${postId}`);
+        if (commentSection.style.display === "none") {
+            commentSection.style.display = "block";
+        } else {
+            commentSection.style.display = "none";
         }
+    }
+</script>
 
-        // Initialize the star ratings for each post
-        setStarRatings();
-
-
-
-    </script>
-
-
-
-
-    <%- include('partials/footer') %>
+<%- include('partials/footer') %>
