@@ -445,9 +445,9 @@ app.post("/cart/checkout", async (req, res) => {
 //-------------------------- SOCIAL Routes --------------------------//
 
 app.get("/social", async (req, res) => {
-  // if (!req.isAuthenticated()) {
-  //   return res.redirect("/login"); // Redirect to login if not authenticated
-  // }
+  if (!req.isAuthenticated()) {
+    return res.redirect("/login"); // Redirect to login if not authenticated
+  }
 
   active_page("social");
   const username = req.isAuthenticated()
@@ -694,15 +694,16 @@ app.get("/like", async (req, res) => {
 // ------------------------------------------------------- COMMENTS ROUTES -------------------------------------------------------//
 
 app.post("/comment", async (req, res) => {
-  const user = req.user; // Assuming you have user ID stored in session
-  const bookId = req.body.bookId; // Get book ID from request body
+  const user = req.user; // Assuming user ID is stored in session
+  const postId = req.body.postId; // Get post ID from request body
   const commentText = req.body.comment; // Get comment text from request body
 
+
   // Validate input
-  if (!user.id || !bookId || !commentText) {
+  if (!user.id || !postId || !commentText) {
     return res
       .status(400)
-      .send("User ID, Book ID, and comment text are required.");
+      .send("User ID, Post ID, and comment text are required.");
   }
 
   try {
@@ -715,28 +716,29 @@ app.post("/comment", async (req, res) => {
       return res.status(400).send("User does not exist.");
     }
 
-    // Check if the book exists
-    const bookExistsResult = await db.query(
-      "SELECT id FROM books WHERE id = $1",
-      [bookId]
+    // Check if the post exists
+    const postExistsResult = await db.query(
+      "SELECT id FROM user_posts WHERE id = $1",
+      [postId]
     );
-    if (bookExistsResult.rows.length === 0) {
-      return res.status(400).send("Book does not exist.");
+    if (postExistsResult.rows.length === 0) {
+      return res.status(400).send("Post does not exist.");
     }
 
-    // Insert the comment into the comments table
+    // Insert the comment into the post_comments table
     await db.query(
-      "INSERT INTO comments (user_id, book_id, comment_text, created_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP)",
-      [user.id, bookId, commentText]
+      "INSERT INTO post_comments (user_id, post_id, comment, commented_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP)",
+      [user.id, postId, commentText]
     );
 
-    // Redirect to the specific book page
-    res.redirect("/specific?id=${bookId}");
+    // Redirect to the specific post page
+    res.redirect(`/social?id=${postId}`);
   } catch (err) {
     console.error("Error saving comment", err);
     res.status(500).send("Internal Server Error");
   }
 });
+
 
 //-------------------------- LOGIN Route --------------------------//
 

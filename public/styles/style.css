@@ -583,6 +583,7 @@ footer i {
 
 .comment-section .comments-list {
   max-height: 150px; /* Show only 10 lines */
+  width: 100%;
   overflow-y: auto;
   padding: 10px;
   border: 1px solid #ccc;

@@ -61,7 +61,7 @@
                 </div>
                 <div class="comment-section">
                     <form action="/comment" method="POST">
-                        <input type="hidden" name="bookId" value="<%= post.id %>" />
+                        <input type="hidden" name="postId" value="<%= post.post_id %>" />
                         <input type="text" name="comment" class="comment-input" placeholder="Write a comment..." required />
                         <button type="submit" class="submit-comment"><i class='bx bxs-send'
                                 style='color:#ffffff'></i></button>
@@ -71,9 +71,10 @@
                     <div class="comments-list">
                         <ul class="user-comments">
                             <% post.comments.forEach(comment=> { %>
-                                <!-- <li class="user-comment"><i class='bx bxs-bullseye'></i> -->
+                                <li class="user-comment">
+                                    <!-- <i class='bx bxs-bullseye'></i> -->
                                     <img src="<%= comment.profile_image_url %>" alt="" style="width: 30px; height: 30px; border-radius: 50%;"> 
-                                    <%= comment.username %>
+                                    <strong><%= comment.username %></strong>
                                     <%= comment.comment %>
                                 </li>
                                 <% }) %>
