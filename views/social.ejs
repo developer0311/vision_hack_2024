@@ -7,6 +7,7 @@
             <div class="post" data-rating="<%= post.rating %>">
                 
                 <div class="profile">
+                    <img src="<%= post.profile_image_url %>" alt="" style="width: 30px; height: 30px; border-radius: 50%;">
                     <p><%= post.username %></p>
                 </div>
                 <div class="post-image">
@@ -43,8 +44,41 @@
                     </div>
                 </div>
                 <div class="post-like-comment">
-                    <i class='bx bx-heart'></i>
-                    <i class='bx bx-message-rounded-dots'></i>
+                    <div class="l-c-s-d-option">
+                        <a href="/like?id=<%= post.id %>">
+                                <i class="bx <%= post.user_liked ? 'bxs-heart' : 'bx-heart' %>" style='color:#ff0000' title="<%= post.user_liked ? 'Unlike' : 'Like' %>"></i>
+                            <span>
+                                <%= post.likes_count %>
+                            </span>
+                        </a>
+                    </div>
+                    <div class="l-c-s-d-option">
+                        <i class='bx bx-message-rounded-dots' title="Comment"></i>
+                        <span>
+                            <%= post.comments_count %>
+                        </span>
+                    </div>
+                </div>
+                <div class="comment-section" ">
+                    <form action="/comment" method="POST">
+                        <input type="hidden" name="bookId" value="<%= post.id %>" />
+                        <input type="text" name="comment" class="comment-input" placeholder="Write a comment..." required />
+                        <button type="submit" class="submit-comment"><i class='bx bxs-send'
+                                style='color:#ffffff'></i></button>
+                    </form>
+                
+                    <!-- Scrollable Comment List -->
+                    <div class="comments-list">
+                        <ul class="user-comments">
+                            <% post.comments.forEach(comment=> { %>
+                                <!-- <li class="user-comment"><i class='bx bxs-bullseye'></i> -->
+                                    <img src="<%= comment.profile_image_url %>" alt="" style="width: 30px; height: 30px; border-radius: 50%;"> 
+                                    <%= comment.username %>
+                                    <%= comment.comment %>
+                                </li>
+                                <% }) %>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <% }) %>

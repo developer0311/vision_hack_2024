@@ -18,7 +18,7 @@ CREATE TABLE products (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
---
+
 ------------------------------- USER TABLE -------------------------------
 
 CREATE TABLE users (
@@ -93,6 +93,7 @@ CREATE TABLE post_likes (
     id SERIAL PRIMARY KEY,
     post_id INT REFERENCES user_posts(id) ON DELETE CASCADE,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    action VARCHAR(10) CHECK (action IN ('like', 'dislike')) NOT NULL,
     liked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

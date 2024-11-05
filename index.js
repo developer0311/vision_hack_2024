@@ -411,13 +411,14 @@ app.get("/social", async (req, res) => {
   let profileImageUrl = req.isAuthenticated()
     ? req.user.profile_image_url
     : favicon;
+  let userId = req.user.id
 
   let post_result = await db.query(`
     SELECT 
-        up.id,
+        up.id AS post_id,
         u.username,
         u.profile_image_url,
-        up.image_url AS post_image_url, -- Use image_url from user_posts
+        up.image_url AS post_image_url,
         p.eco_friendly,
         p.recycled,
         p.locally_sourced,
@@ -425,17 +426,39 @@ app.get("/social", async (req, res) => {
         up.post_text,
         up.likes_count,
         up.comments_count,
-        up.created_at
+        up.created_at,
+        COALESCE(pl.action = 'like', false) AS user_liked,
+        COALESCE(
+            JSON_AGG(
+                JSON_BUILD_OBJECT(
+                    'comment_id', pc.id,
+                    'comment', pc.comment,
+                    'commented_at', pc.commented_at,
+                    'username', uc.username,
+                    'profile_image_url', uc.profile_image_url
+                )
+            ) FILTER (WHERE pc.id IS NOT NULL), '[]'
+        ) AS comments
     FROM 
         user_posts up
     JOIN 
         users u ON up.user_id = u.id
     LEFT JOIN 
         products p ON up.product_id = p.id
+    LEFT JOIN 
+        post_likes pl ON up.id = pl.post_id AND pl.user_id = $1
+    LEFT JOIN 
+        post_comments pc ON up.id = pc.post_id
+    LEFT JOIN 
+        users uc ON pc.user_id = uc.id
+    GROUP BY 
+        up.id, u.username, u.profile_image_url, up.image_url, p.eco_friendly, 
+        p.recycled, p.locally_sourced, p.rating, up.post_text, up.likes_count, 
+        up.comments_count, up.created_at, pl.action
     ORDER BY 
         up.created_at DESC
     LIMIT 10;
-`);
+`,[userId]);
 
 
   res.render(__dirname + "/views/social.ejs", {
@@ -535,6 +558,134 @@ app.post(
     }
   }
 );
+
+
+//-------------------------- LIKE and DISLIKE Routes --------------------------//
+ 
+app.get("/like", async (req, res) => {
+  const userId = req.user.id; // Assuming you have user ID stored in session
+  const bookId = req.query.id; // Get book ID from query parameters
+
+  if (!userId || !bookId) {
+    return res.status(400).send("User ID and Book ID are required.");
+  }
+
+  try {
+    // Check if user exists
+    const userExistsResult = await db.query(
+      "SELECT id FROM users WHERE id = $1",
+      [userId]
+    );
+    if (userExistsResult.rows.length === 0) {
+      return res.status(400).send("User does not exist.");
+    }
+
+    // Check if book exists
+    const bookExistsResult = await db.query(
+      "SELECT id, likes FROM books WHERE id = $1",
+      [bookId]
+    );
+    if (bookExistsResult.rows.length === 0) {
+      return res.status(400).send("Book does not exist.");
+    }
+
+    // Check if the user has already liked or disliked the book
+    const result = await db.query(
+      "SELECT action FROM likes WHERE user_id=$1 AND book_id=$2",
+      [userId, bookId]
+    );
+
+    if (result.rows.length > 0) {
+      // User has already liked/disliked the book
+      const currentAction = result.rows[0].action;
+
+      // Toggle action
+      if (currentAction === "like") {
+        // Change to dislike
+        await db.query(
+          "UPDATE likes SET action = $1 WHERE user_id = $2 AND book_id = $3",
+          ["dislike", userId, bookId]
+        );
+        // Decrement the like count
+        await db.query("UPDATE books SET likes = likes - 1 WHERE id = $1", [
+          bookId,
+        ]);
+      } else {
+        // Change to like
+        await db.query(
+          "UPDATE likes SET action = $1 WHERE user_id = $2 AND book_id = $3",
+          ["like", userId, bookId]
+        );
+        // Increment the like count
+        await db.query("UPDATE books SET likes = likes + 1 WHERE id = $1", [
+          bookId,
+        ]);
+      }
+    } else {
+      // User has not yet liked or disliked the book, so insert a new like
+      await db.query(
+        "INSERT INTO likes (user_id, book_id, action) VALUES ($1, $2, $3)",
+        [userId, bookId, "like"]
+      );
+      // Increment the like count
+      await db.query("UPDATE books SET likes = likes + 1 WHERE id = $1", [
+        bookId,
+      ]);
+    }
+
+    res.redirect("/specific?id=" + bookId); // Redirect back to the specific page with the book ID
+  } catch (err) {
+    console.error("Error handling like/dislike", err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// ------------------------------------------------------- COMMENTS ROUTES -------------------------------------------------------//
+
+app.post("/comment", async (req, res) => {
+  const user = req.user; // Assuming you have user ID stored in session
+  const bookId = req.body.bookId; // Get book ID from request body
+  const commentText = req.body.comment; // Get comment text from request body
+
+  // Validate input
+  if (!user.id || !bookId || !commentText) {
+    return res
+      .status(400)
+      .send("User ID, Book ID, and comment text are required.");
+  }
+
+  try {
+    // Check if the user exists
+    const userExistsResult = await db.query(
+      "SELECT id FROM users WHERE id = $1",
+      [user.id]
+    );
+    if (userExistsResult.rows.length === 0) {
+      return res.status(400).send("User does not exist.");
+    }
+
+    // Check if the book exists
+    const bookExistsResult = await db.query(
+      "SELECT id FROM books WHERE id = $1",
+      [bookId]
+    );
+    if (bookExistsResult.rows.length === 0) {
+      return res.status(400).send("Book does not exist.");
+    }
+
+    // Insert the comment into the comments table
+    await db.query(
+      "INSERT INTO comments (user_id, book_id, comment_text, created_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP)",
+      [user.id, bookId, commentText]
+    );
+
+    // Redirect to the specific book page
+    res.redirect("/specific?id=${bookId}");
+  } catch (err) {
+    console.error("Error saving comment", err);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 //-------------------------- LOGIN Route --------------------------//
 
