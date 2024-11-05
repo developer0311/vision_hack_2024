@@ -1,0 +1,52 @@
+<%- include('partials/header') %>
+        <section class="profile">
+            <div class="container">
+                <div class="profile-header text-center">
+                    <img src="<%= profile.profile_image_url %>"
+                        alt="Profile Picture">
+                    <!-- <h2>Gourab Acharjee</h2> -->
+                    <h2 class="p-2">@<%= profile.username %></h2>
+                    <!-- <div class="d-flex justify-content-center p-2">
+                        <span style="width: 200px;">Web Developer</span> | 
+                        <span style="width: 200px;">Tech Enthusiast</span> | 
+                        <span style="width: 200px;">Chai Lover</span>
+                    </div> -->
+                    <br>
+                    <div class="d-flex justify-content-center">
+                        <div class="row">
+                            <div class="col w-150" style="width: 150px;"><%= profile.eco_purchases + profile.recycled_purchases + profile.locally_sourced_purchases %><br><strong>Score</strong></div>
+                            <div class="col w-150" style="width: 150px;"><%= profile.total_follower %><br><strong>Followers</strong></div>
+                            <div class="col w-150" style="width: 150px;"><%= profile.total_following %><br><strong>Following</strong></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery row">
+                    <% post.forEach(element => { %>
+                        
+                    
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <img src="<%= element.image_url %>"
+                                class="card-img-top" alt="Post Image">
+                            <div class="card-body">
+                                <p class="card-text"><%= element.post_text %></p>
+                            </div>
+                        </div>
+                    </div>
+                    <% }) %>
+                    <!-- Add more posts as needed -->
+                </div>
+            </div>
+        </section>
+
+    
+
+
+
+
+    <script src="js/script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <%- include('partials/footer') %>

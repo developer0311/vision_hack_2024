@@ -45,7 +45,7 @@
                 </div>
                 <div class="post-like-comment">
                     <div class="l-c-s-d-option">
-                        <a href="/like?id=<%= post.id %>">
+                        <a href="/like?id=<%= post.post_id %>">
                                 <i class="bx <%= post.user_liked ? 'bxs-heart' : 'bx-heart' %>" style='color:#ff0000' title="<%= post.user_liked ? 'Unlike' : 'Like' %>"></i>
                             <span>
                                 <%= post.likes_count %>
@@ -59,7 +59,7 @@
                         </span>
                     </div>
                 </div>
-                <div class="comment-section" ">
+                <div class="comment-section">
                     <form action="/comment" method="POST">
                         <input type="hidden" name="bookId" value="<%= post.id %>" />
                         <input type="text" name="comment" class="comment-input" placeholder="Write a comment..." required />

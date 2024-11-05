@@ -203,7 +203,7 @@ app.get("/search", async (req, res) => {
   }
 });
 
-//-------------------------- INDEX Routes --------------------------//
+//-------------------------- HOME Routes --------------------------//
 
 app.get("/", (req, res) => {
   const username = req.isAuthenticated()
@@ -220,6 +220,51 @@ app.get("/", (req, res) => {
     profileImageUrl: profileImageUrl,
   }); // Render the home view
 });
+
+
+//-------------------------- HOME Routes --------------------------//
+
+app.get("/profile", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.redirect("/login"); // Redirect to login if not authenticated
+  }
+  
+  const userId = req.user.id;
+  const username = req.user.username;
+
+  try {
+    // Await the database query to get user details
+    const user_result = await db.query("SELECT * FROM users WHERE id = $1", [userId]);
+    const user_post = await db.query("SELECT * FROM user_posts WHERE user_id = $1", [userId]);
+
+
+    // Check if the user exists
+    if (user_result.rows.length === 0) {
+      return res.status(404).send("User not found."); // Handle user not found case
+    }
+
+    const profileImageUrl = user_result.rows[0].profile_image_url; // Define profileImageUrl
+
+    active_page("home"); // Assuming this function sets the active page context
+
+    
+
+    // Render the profile page
+    res.render(__dirname + "/views/user_profile.ejs", {
+      profile_name: username,
+      homeActive: home_active,
+      cartActive: cart_active,
+      socialActive: social_active,
+      profileImageUrl: profileImageUrl,
+      profile: user_result.rows[0],
+      post: user_post.rows,
+    });
+  } catch (err) {
+    console.error("Error fetching user profile", err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 
 //-------------------------- INDEX Routes --------------------------//
 
@@ -461,6 +506,7 @@ app.get("/social", async (req, res) => {
 `,[userId]);
 
 
+
   res.render(__dirname + "/views/social.ejs", {
     profile_name: username,
     homeActive: home_active,
@@ -563,11 +609,12 @@ app.post(
 //-------------------------- LIKE and DISLIKE Routes --------------------------//
  
 app.get("/like", async (req, res) => {
-  const userId = req.user.id; // Assuming you have user ID stored in session
-  const bookId = req.query.id; // Get book ID from query parameters
+  const userId = req.user.id; // Assuming user ID is stored in session
+  const postId = req.query.id; // Get post ID from query parameters
+  console.log(userId)
 
-  if (!userId || !bookId) {
-    return res.status(400).send("User ID and Book ID are required.");
+  if (!userId || !postId) {
+    return res.status(400).send("User ID and Post ID are required.");
   }
 
   try {
@@ -580,65 +627,69 @@ app.get("/like", async (req, res) => {
       return res.status(400).send("User does not exist.");
     }
 
-    // Check if book exists
-    const bookExistsResult = await db.query(
-      "SELECT id, likes FROM books WHERE id = $1",
-      [bookId]
+    // Check if post exists
+    const postExistsResult = await db.query(
+      "SELECT id, likes_count FROM user_posts WHERE id = $1",
+      [postId]
     );
-    if (bookExistsResult.rows.length === 0) {
-      return res.status(400).send("Book does not exist.");
+    if (postExistsResult.rows.length === 0) {
+      return res.status(400).send("Post does not exist.");
     }
 
-    // Check if the user has already liked or disliked the book
-    const result = await db.query(
-      "SELECT action FROM likes WHERE user_id=$1 AND book_id=$2",
-      [userId, bookId]
+    // Check if the user has already liked or disliked the post
+    const likeResult = await db.query(
+      "SELECT action FROM post_likes WHERE user_id = $1 AND post_id = $2",
+      [userId, postId]
     );
 
-    if (result.rows.length > 0) {
-      // User has already liked/disliked the book
-      const currentAction = result.rows[0].action;
+    if (likeResult.rows.length > 0) {
+      // User has already liked/disliked the post
+      const currentAction = likeResult.rows[0].action;
 
       // Toggle action
       if (currentAction === "like") {
         // Change to dislike
         await db.query(
-          "UPDATE likes SET action = $1 WHERE user_id = $2 AND book_id = $3",
-          ["dislike", userId, bookId]
+          "UPDATE post_likes SET action = $1 WHERE user_id = $2 AND post_id = $3",
+          ["dislike", userId, postId]
         );
         // Decrement the like count
-        await db.query("UPDATE books SET likes = likes - 1 WHERE id = $1", [
-          bookId,
-        ]);
+        await db.query(
+          "UPDATE user_posts SET likes_count = likes_count - 1 WHERE id = $1",
+          [postId]
+        );
       } else {
         // Change to like
         await db.query(
-          "UPDATE likes SET action = $1 WHERE user_id = $2 AND book_id = $3",
-          ["like", userId, bookId]
+          "UPDATE post_likes SET action = $1 WHERE user_id = $2 AND post_id = $3",
+          ["like", userId, postId]
         );
         // Increment the like count
-        await db.query("UPDATE books SET likes = likes + 1 WHERE id = $1", [
-          bookId,
-        ]);
+        await db.query(
+          "UPDATE user_posts SET likes_count = likes_count + 1 WHERE id = $1",
+          [postId]
+        );
       }
     } else {
-      // User has not yet liked or disliked the book, so insert a new like
+      // User has not yet liked or disliked the post, so insert a new like
       await db.query(
-        "INSERT INTO likes (user_id, book_id, action) VALUES ($1, $2, $3)",
-        [userId, bookId, "like"]
+        "INSERT INTO post_likes (user_id, post_id, action) VALUES ($1, $2, $3)",
+        [userId, postId, "like"]
       );
       // Increment the like count
-      await db.query("UPDATE books SET likes = likes + 1 WHERE id = $1", [
-        bookId,
-      ]);
+      await db.query(
+        "UPDATE user_posts SET likes_count = likes_count + 1 WHERE id = $1",
+        [postId]
+      );
     }
 
-    res.redirect("/specific?id=" + bookId); // Redirect back to the specific page with the book ID
+    res.redirect("/social?id=" + postId); // Redirect back to the social page with the post ID
   } catch (err) {
     console.error("Error handling like/dislike", err);
     res.status(500).send("Internal Server Error");
   }
 });
+
 
 // ------------------------------------------------------- COMMENTS ROUTES -------------------------------------------------------//
 
