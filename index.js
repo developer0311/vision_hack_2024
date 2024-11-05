@@ -186,22 +186,34 @@ let handleCloudinaryImageDelete = async (public_id) => {
 //-------------------------- SEARCH Routes --------------------------//
 
 app.get("/search", async (req, res) => {
-  const searchQuery = req.query.query; // Get the search term from the query string
-
   try {
-    if (!searchQuery) {
-      return res.status(400).send("Search query is required");
-    }
+    // Get the search query from the input field
+    const searchTerm = req.query.search;
+    console.log(searchTerm)
+
+    // Query the database to find the book by title (using ILIKE for case-insensitive partial matches)
     const result = await db.query(
-      "SELECT * FROM products WHERE name ILIKE $1",
-      [`%${searchQuery}%`]
+      "SELECT id FROM products WHERE name ILIKE $1 LIMIT 1",
+      [`%${searchTerm}%`] // Using % for partial matches
     );
-    res.render("searchResults", { products: result.rows, query: searchQuery });
+
+    // If a book is found, redirect to the specific book page
+    if (result.rows.length > 0) {
+      const productId = result.rows[0].id;
+      res.redirect(`/specific?id=${productId}`);
+    } else {
+      let user = req.user;
+      let username = get_username(user.email);
+      let profileImageUrl = req.user.profile_image_url;
+      // If no book is found, redirect to a general books page or handle the "no results" case
+      res.redirect("/specific?id=${productId}");
+    }
   } catch (error) {
-    console.error("Error executing query", error.stack);
-    res.status(500).send("Internal Server Error");
+    console.error("Error searching for book:", error);
+    res.status(500).send("Internal server error");
   }
 });
+
 
 //-------------------------- HOME Routes --------------------------//
 
@@ -552,14 +564,13 @@ app.get("/post-edit", async (req, res) => {
   });
 });
 
-app.post(
-  "/share-post",
+app.post( "/share-post",
   upload.fields([{ name: "new-image", maxCount: 1 }]),
   async (req, res) => {
     // Uncomment if authentication check is needed
-    // if (!req.isAuthenticated()) {
-    //   return res.redirect("/login"); // Redirect to login if not authenticated
-    // }
+    if (!req.isAuthenticated()) {
+      return res.redirect("/login"); // Redirect to login if not authenticated
+    }
     active_page("social");
 
     const userId = req.user.id; // Assuming req.user contains authenticated user info

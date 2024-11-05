@@ -1,3 +1,6 @@
+## ECONEST: A Community Driven Eco-friendly Marketplace
+
+
 #============================== CREATE .env FILE THEN COPY PASTE BELOW CODE AND SET VALUES ==============================#
 #------------------------------- SERVER DETAILS -------------------------------#
 SERVER_PORT=YOUR_SERVER_PORT
@@ -6,17 +9,11 @@ SERVER_PORT=YOUR_SERVER_PORT
 #------------------------------- POSTGRES DETAILS -------------------------------#
 DB_USER=YOUR_USERNAME
 DB_HOST=YOUR_HOSTNAME
-DB_NAME=tour
+DB_NAME=YOUR_USERNAME
 DB_PASSWORD=YOUR_PASSWORD
 DB_PORT=5432
 
 **Then import the product.csv in your db for sample products**
-
-
-#------------------------------- GOOGLE AUTH -------------------------------#
-GOOGLE_CLIENT_ID="YOUR GOOGLE CLIENT ID"
-GOOGLE_CLIENT_SECRET="YOUR CLIENT SECRET"
-SESSION_SECRET="TOPSECRETWORD"
 
 
 #============================== NPM SETUP ==============================#
