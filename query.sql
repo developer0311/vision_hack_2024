@@ -18,7 +18,7 @@ CREATE TABLE products (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
+--
 ------------------------------- USER TABLE -------------------------------
 
 CREATE TABLE users (
