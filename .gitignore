@@ -131,3 +131,9 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# CA certificate for Aiven postgres database
+ca.pem
+
+# VS Code workspace folder
+.vscode/
