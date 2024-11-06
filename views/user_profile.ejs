@@ -4,17 +4,22 @@
                 <div class="profile-header text-center">
                     <img src="<%= profile.profile_image_url %>"
                         alt="Profile Picture">
-                    <!-- <h2>Gourab Acharjee</h2> -->
-                    <h2 class="p-2">@<%= profile.username %></h2>
+                    <br>
+                    <br>
+                    
+                    <h2><%= profile.first_name %> <%= profile.last_name %></h2>
+                    <p class="p-2">@<%= profile.username %></p>
+
                     <!-- <div class="d-flex justify-content-center p-2">
                         <span style="width: 200px;">Web Developer</span> | 
                         <span style="width: 200px;">Tech Enthusiast</span> | 
                         <span style="width: 200px;">Chai Lover</span>
                     </div> -->
-                    <br>
+                    <!-- <br> -->
+
                     <div class="d-flex justify-content-center">
                         <div class="row">
-                            <div class="col w-150" style="width: 150px;"><%= profile.eco_purchases + profile.recycled_purchases + profile.locally_sourced_purchases %><br><strong>Score</strong></div>
+                            <div class="col w-150" style="width: 150px;"><%= profile.eco_purchases + profile.recycled_purchases + profile.locally_sourced_purchases %><br><strong>Eco Coins</strong></div>
                             <div class="col w-150" style="width: 150px;"><%= profile.total_follower %><br><strong>Followers</strong></div>
                             <div class="col w-150" style="width: 150px;"><%= profile.total_following %><br><strong>Following</strong></div>
                         </div>
@@ -24,17 +29,19 @@
                     <% post.forEach(element => { %>
                         
                     
-                    <div class="col-md-4">
+                    <div class="col-md-4 col-sm-6">
                         <div class="card mb-4">
-                            <img src="<%= element.image_url %>"
+                            <div class="card-image">
+                                <img src="<%= element.image_url %>"
                                 class="card-img-top" alt="Post Image">
+                            </div>
                             <div class="card-body">
                                 <p class="card-text"><%= element.post_text %></p>
                             </div>
                         </div>
                     </div>
                     <% }) %>
-                    <!-- Add more posts as needed -->
+                    
                 </div>
             </div>
         </section>

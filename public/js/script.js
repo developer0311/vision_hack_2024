@@ -1,40 +1,7 @@
-let dropdown = document.querySelectorAll(".dropdown")[0];
-let downArrow = document.querySelector("#downArrow");
-let dropdownMenu = document.querySelectorAll(".dropdown-menu")
-
-// Toggle arrow rotation when dropdown is clicked
-dropdown.addEventListener('click', function(event) {
-    event.stopPropagation(); // Prevent event from bubbling up to the document
-    if (downArrow.style.transform === "rotate(180deg)") {
-        downArrow.style.transform = "rotate(0deg)"; // Arrow points down
-    } else {
-        downArrow.style.transform = "rotate(180deg)"; // Arrow points up
-    }
-});
-
-// Add an event listener to the whole document to reset the arrow when clicking outside dropdown
-document.addEventListener('click', function() {
-    if (downArrow.style.transform === "rotate(180deg)") {
-        downArrow.style.transform = "rotate(0deg)"; // Reset the arrow back down
-    }
-});
-
-// Prevent the arrow from resetting when clicking inside the dropdown options
-dropdown.querySelectorAll(".dropdown-item").forEach(function(option) {
-    option.addEventListener('click', function(event) {
-        event.stopPropagation(); // Keep the arrow up when clicking inside the dropdown options
-    });
-});
-
-dropdownMenu.forEach((elem)=>{
-    elem.addEventListener('click', (event)=> {
-        event.stopPropagation(); // Keep the arrow up when clicking inside the dropdown options
-    });
-})
 
 
+//--------------------------- Select all carousel containers ---------------------------//
 
-// Select all carousel containers
 const carousels = document.querySelectorAll('.home-product-cards-wrapper');
 
 // Loop through each carousel and set up functionality
@@ -91,6 +58,16 @@ carousels.forEach((carousel) => {
     // Initialize the carousel on page load
     updateButtons(); // Set initial button visibility
     slideCards(); // Slide to the starting position
+});
+
+
+//--------------------------- Select all carousel containers ---------------------------//
+
+const togglePassButton = document.querySelector(".toggle-pass");
+
+togglePassButton.addEventListener("click", () => {
+  togglePassButton.classList.toggle("bx-hide");
+  togglePassButton.classList.toggle("bx-show");
 });
 
 

@@ -329,6 +329,9 @@ app.get("/home", async (req, res) => {
 //-------------------------- SPECIFIC ITEMS Routes --------------------------//
 
 app.get("/specific", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.redirect("/login"); // Redirect to login if not authenticated
+  }
   active_page("home");
   try {
     const productId = parseInt(req.query.id);
@@ -741,6 +744,12 @@ app.post("/comment", async (req, res) => {
       [user.id, postId, commentText]
     );
 
+    // Increment the like count
+    await db.query(
+      "UPDATE user_posts SET comments_count = comments_count + 1 WHERE id = $1",
+      [postId]
+    );
+
     // Redirect to the specific post page
     res.redirect(`/social?id=${postId}`);
   } catch (err) {
@@ -766,7 +775,7 @@ app.get("/login", (req, res) => {
     homeActive: home_active,
     cartActive: cart_active,
     socialActive: social_active,
-    profileImageUrl: profileImageUrl,
+    profileImageUrl: favicon,
   });
 });
 
@@ -776,9 +785,16 @@ app.post("/login", (req, res, next) => {
       return next(err); // Handle error
     }
     if (!user) {
-      // If the user is not found or password is incorrect, flash the error and redirect to login
-      req.flash("error", info.message || "User not found, please register.");
-      return res.redirect("/login"); // Redirect back to the login page
+      // Flash the error message based on the reason provided by `info.message`
+      req.flash("error", info.message || "Invalid credentials. Please try again.");
+      return res.render("login", { 
+        profile_name: "Guest",
+        homeActive: home_active,
+        cartActive: cart_active,
+        socialActive: social_active,
+        profileImageUrl: favicon,
+        errorMessage: info.message || "Invalid credentials. Please try again.",
+      });
     }
     req.logIn(user, (err) => {
       if (err) {
@@ -786,8 +802,9 @@ app.post("/login", (req, res, next) => {
       }
       return res.redirect("/home"); // Successful login
     });
-  })(req, res, next); // Call passport.authenticate with req, res, next
+  })(req, res, next);
 });
+
 
 //-------------------------- REGISTER Route --------------------------//
 
@@ -809,12 +826,11 @@ app.get("/register", (req, res) => {
   });
 });
 
-app.post(
-  "/register",
+app.post("/register",
   upload.fields([{ name: "profile_photo", maxCount: 1 }]), // Adjusted to match the input name in the form
   async (req, res) => {
     active_page("home");
-    const { username, email, password, mobile_number, address, pincode } =
+    const { username, first_name, last_name, email, password, mobile_number, address, pincode } =
       req.body;
 
     try {
@@ -834,10 +850,11 @@ app.post(
         }
         return res.render("register", {
           errorMessage: errorMessage,
-          profile_name: username,
+          profile_name: "Guest",
           homeActive: home_active,
           cartActive: cart_active,
           socialActive: social_active,
+          profileImageUrl: favicon,
         });
       }
 
@@ -860,10 +877,12 @@ app.post(
           return res.status(500).send("Internal Server Error");
         } else {
           const result = await db.query(
-            `INSERT INTO users (username, public_id, profile_image_url, password, mobile_number, email, address, pincode) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+            `INSERT INTO users (username, first_name, last_name, public_id, profile_image_url, password, mobile_number, email, address, pincode) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
             [
               username,
+              first_name,
+              last_name, 
               coverImageUploadResult.uploadResult.public_id,
               coverImageUploadResult.uploadResult.secure_url,
               hash,
@@ -906,8 +925,10 @@ app.get("/logout", (req, res) => {
   });
 });
 
-app.get(
-  "/auth/google",
+
+//-------------------------- PASSPORT LOGICS --------------------------//
+
+app.get("/auth/google",
   passport.authenticate("google", {
     scope: ["profile", "email"],
   })
@@ -915,33 +936,29 @@ app.get(
 
 passport.use(
   "local",
-  new Strategy(async function verify(username, password, cb) {
+  new Strategy(async function verify(email, password, cb) {
     try {
-      const result = await db.query("SELECT * FROM users WHERE email = $1", [
-        username,
-      ]);
-      if (result.rows.length > 0) {
-        const user = result.rows[0];
-        const storedHashedPassword = user.password;
+      const result = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+      if (result.rows.length === 0) {
+        return cb(null, false, { message: "Email not found. Please register." });
+      }
 
-        // Use promise with bcrypt.compare for better error handling
-        const valid = await bcrypt.compare(password, storedHashedPassword);
-        if (valid) {
-          return cb(null, user);
-        } else {
-          return cb(null, false, {
-            message: "Invalid password. Please try again.",
-          });
-        }
+      const user = result.rows[0];
+      const storedHashedPassword = user.password;
+
+      const valid = await bcrypt.compare(password, storedHashedPassword);
+      if (valid) {
+        return cb(null, user);
       } else {
-        return cb(null, false, { message: "User not found. Please register." });
+        return cb(null, false, { message: "Incorrect password. Please try again." });
       }
     } catch (err) {
       console.log(err);
-      return cb(err); // Handle unexpected errors
+      return cb(err);
     }
   })
 );
+
 
 passport.use(
   "google",
@@ -1010,8 +1027,7 @@ app.get(`/admin/${admin_password}/products`, async (req, res) => {
   res.render(__dirname + "/views/admin_product.ejs", { products: result.rows });
 });
 
-app.get(
-  `/admin/${admin_password}/products/edit/:productId`,
+app.get(`/admin/${admin_password}/products/edit/:productId`,
   async (req, res) => {
     const productId = req.params.productId;
     let result = await db.query("SELECT * FROM products where id=$1", [
@@ -1023,8 +1039,7 @@ app.get(
   }
 );
 
-app.get(
-  `/admin/${admin_password}/products/delete/:productId`,
+app.get(`/admin/${admin_password}/products/delete/:productId`,
   async (req, res) => {
     const productId = req.params.productId;
     let result = await db.query("SELECT * FROM products where id=$1", [

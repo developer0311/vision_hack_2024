@@ -24,6 +24,8 @@ CREATE TABLE products (
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
     public_id TEXT NOT NULL,
     profile_image_url TEXT NOT NULL,
     password TEXT NOT NULL,

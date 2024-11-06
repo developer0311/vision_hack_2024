@@ -42,7 +42,7 @@ label,
 input,
 button,
 textarea {
-  font-family: "Montserrat", sans-serif;
+  font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 .my-active {
@@ -636,14 +636,40 @@ footer i {
   height: 150px;
 }
 
-.gallery img {
-  width: 100%;
-  height: auto;
-}
-
 .gallery {
   margin-top: 20px;
 }
+
+.gallery .card-image {
+  width: 100%;       /* Full width */
+  height: 200px;     /* Fixed height for uniform card size */
+  overflow: hidden;  /* Hide overflow if needed */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery .card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Display the entire image within the container */
+}
+
+
+.gallery .card-body{
+  width: 60%;
+  margin: 0px auto;
+}
+
+.gallery .card-body p{
+  overflow: scroll;
+}
+
+.gallery .card-body p::-webkit-scrollbar{
+  width: 0px;
+}
+
+
 
 /*-------------------------- LOGIN.ejs & REGISTER.ejs --------------------------*/
 

@@ -1,74 +1,87 @@
 <%- include('partials/header') %>
-<div class="container col-sm-9 col-lg-6">
-  <h1>Register</h1>
+  <div class="container col-sm-9 col-lg-6">
+    <h1>Register</h1>
 
-  <div class="row">
-    <div class="col-sm-12 l-g-form">
-      <div class="card">
-        <div class="card-body">
+    <div class="row">
+      <div class="col-sm-12 l-g-form">
+        <div class="card">
+          <div class="card-body">
 
-          <!-- Display error message if it exists -->
-          <% if (typeof errorMessage !== 'undefined') { %>
-            <div class="alert alert-danger" role="alert">
-              <%= errorMessage %>
-            </div>
-          <% } %>
-
-          <!-- Makes POST request to /register route -->
-          <form class="l-g-form" action="/register" method="POST" enctype="multipart/form-data">
-            <!-- Username -->
-            <div class="form-group">
-              <label for="username">Username</label>
-              <input type="text" class="form-control" name="username" required>
-            </div>
-
-            <!-- New Profile Image Upload Section -->
-            <div class="mb-3">
-              <label for="profile_photo" class="form-label">Profile Photo:</label>
-              <input type="file" id="profile_photo" name="profile_photo" class="form-control" accept="image/*" required>
-          </div>
-
-            <!-- Email -->
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" class="form-control" name="email" required>
-            </div>
-
-            <!-- Password -->
-            <div class="form-group">
-              <label for="password">Password</label>
-              <div class="input-group">
-                <input type="password" class="form-control pass" name="password" required>
-                <button class="btn bx bx-hide toggle-pass"></button>
+            <!-- Display error message if it exists -->
+            <% if (typeof errorMessage !=='undefined' ) { %>
+              <div class="alert alert-danger" role="alert">
+                <%= errorMessage %>
               </div>
-            </div>
+              <% } %>
 
-            <!-- Mobile Number -->
-            <div class="form-group">
-              <label for="mobile_number">Mobile Number</label>
-              <input type="text" class="form-control" name="mobile_number" required>
-            </div>
+                <!-- Makes POST request to /register route -->
+                <form class="l-g-form" action="/register" method="POST" enctype="multipart/form-data">
+                  <!-- Username -->
+                  <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                  </div>
 
-            <!-- Address -->
-            <div class="form-group">
-              <label for="address">Address</label>
-              <textarea class="form-control" name="address" rows="3" required></textarea>
-            </div>
+                  <!-- First Name -->
+                  <div class="form-group">
+                    <label for="first_name">First Name</label>
+                    <input type="text" class="form-control" id="first_name" name="first_name" required>
+                  </div>
 
-            <!-- Pincode -->
-            <div class="form-group">
-              <label for="pincode">Pincode</label>
-              <input type="number" class="form-control" name="pincode" required>
-            </div>
+                  <!-- Last Name -->
+                  <div class="form-group">
+                    <label for="last_name">Last Name</label>
+                    <input type="text" class="form-control" id="last_name" name="last_name" required>
+                  </div>
 
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-dark">Register</button>
-          </form>
+                  <!-- New Profile Image Upload Section -->
+                  <div class="mb-3">
+                    <label for="profile_photo" class="form-label">Profile Photo:</label>
+                    <input type="file" id="profile_photo" name="profile_photo" class="form-control" accept="image/*"
+                      required>
+                  </div>
 
+                  <!-- Email -->
+                  <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                  </div>
+
+                  <!-- Password -->
+                  <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-group">
+                      <input type="password" class="form-control pass" id="password" name="password" required>
+                      <button class="btn bx bx-hide toggle-pass"></button>
+                    </div>
+                  </div>
+
+                  <!-- Mobile Number -->
+                  <div class="form-group">
+                    <label for="mobile_number">Mobile Number</label>
+                    <input type="text" class="form-control" id="mobile_number" name="mobile_number" required>
+                  </div>
+
+                  <!-- Address -->
+                  <div class="form-group">
+                    <label for="address">Address</label>
+                    <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                  </div>
+
+                  <!-- Pincode -->
+                  <div class="form-group">
+                    <label for="pincode">Pincode</label>
+                    <input type="number" class="form-control" id="pincode" name="pincode" required>
+                  </div>
+
+                  <!-- Submit Button -->
+                  <button type="submit" class="btn btn-dark">Register</button>
+                </form>
+
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<%- include('partials/footer') %>
+  <%- include('partials/footer') %>
