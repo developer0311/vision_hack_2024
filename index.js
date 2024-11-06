@@ -346,7 +346,7 @@ app.get("/specific", async (req, res) => {
 
     if (product) {
       let user = req.user;
-      let username = get_username(user.email);
+      let username = user.username;
       let profileImageUrl = req.user.profile_image_url;
       // console.log(username)
       res.render(__dirname + "/views/specific.ejs", {
@@ -387,7 +387,7 @@ app.get("/cart", async (req, res) => {
         return total + parseFloat(item.price); // Convert price to float before adding
       }, 0);
 
-      const username = get_username(req.user.email); // Get the username
+      const username = req.user.username; // Get the username
       res.render(__dirname + "/views/cart.ejs", {
         cartItems: cartItems || [],
         totalPrice,
@@ -466,7 +466,7 @@ app.get("/social", async (req, res) => {
 
   active_page("social");
   const username = req.isAuthenticated()
-    ? get_username(req.user.email)
+    ? req.user.username
     : "Guest"; // Check if the user is authenticated
   let profileImageUrl = req.isAuthenticated()
     ? req.user.profile_image_url
@@ -539,7 +539,7 @@ app.get("/post-edit", async (req, res) => {
   active_page("social");
 
   const username = req.isAuthenticated()
-    ? get_username(req.user.email)
+    ? req.user.username
     : "Guest";
   let profileImageUrl = req.isAuthenticated()
     ? req.user.profile_image_url
