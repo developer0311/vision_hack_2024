@@ -29,7 +29,7 @@ CREATE TABLE users (
     public_id TEXT NOT NULL,
     profile_image_url TEXT NOT NULL,
     password TEXT NOT NULL,
-    mobile_number VARCHAR(20) NOT NULL,
+    mobile_number VARCHAR(20) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     address TEXT NOT NULL,
     pincode INT NOT NULL,

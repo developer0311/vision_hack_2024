@@ -839,18 +839,21 @@ app.get("/register", (req, res) => {
   });
 });
 
-app.post("/register",
+app.post(
+  "/register",
   upload.fields([{ name: "profile_photo", maxCount: 1 }]), // Adjusted to match the input name in the form
   async (req, res) => {
     active_page("home");
     const { username, first_name, last_name, email, password, mobile_number, address, pincode } =
       req.body;
 
+    let result_mobile_number = mobile_number.replace(/^0+/, ""); // Removes leading zeros from mobile number
+
     try {
-      // Check if the email or username already exists
+      // Check if the email, username, or mobile number already exists
       const checkResult = await db.query(
-        "SELECT * FROM users WHERE email = $1 OR username = $2",
-        [email, username]
+        "SELECT * FROM users WHERE email = $1 OR username = $2 OR mobile_number = $3",
+        [email, username, result_mobile_number]
       );
 
       // Determine the error type
@@ -858,11 +861,14 @@ app.post("/register",
         let errorMessage;
         if (checkResult.rows.some((user) => user.username === username)) {
           errorMessage = "Username must be unique.";
-        } else {
+        } else if (checkResult.rows.some((user) => user.email === email)){
           errorMessage = "Email is already registered.";
+        } else if (checkResult.rows.some((user) => user.mobile_number === result_mobile_number)) {
+          errorMessage = "Mobile number is already registered.";
         }
         return res.render("register", {
           errorMessage: errorMessage,
+          profile_id: 0,
           profile_name: "Guest",
           homeActive: home_active,
           cartActive: cart_active,
@@ -895,11 +901,11 @@ app.post("/register",
             [
               username,
               first_name,
-              last_name, 
+              last_name,
               coverImageUploadResult.uploadResult.public_id,
               coverImageUploadResult.uploadResult.secure_url,
               hash,
-              mobile_number,
+              result_mobile_number, // Use result_mobile_number to ensure the format is consistent
               email,
               address,
               pincode,
@@ -926,6 +932,7 @@ app.post("/register",
     }
   }
 );
+
 
 //-------------------------- LOGOUT Route --------------------------//
 

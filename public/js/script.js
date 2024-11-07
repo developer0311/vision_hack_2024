@@ -71,10 +71,20 @@ carousels.forEach((carousel) => {
 //--------------------------- Select all carousel containers ---------------------------//
 
 const togglePassButton = document.querySelector(".toggle-pass");
+const passwordInput = document.querySelector(".pass");
 
 togglePassButton.addEventListener("click", () => {
+  // Toggle password visibility
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+  } else {
+    passwordInput.type = "password";
+  }
+  
+  // Toggle icon classes
   togglePassButton.classList.toggle("bx-hide");
   togglePassButton.classList.toggle("bx-show");
 });
+
 
 
