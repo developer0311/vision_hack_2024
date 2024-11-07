@@ -224,11 +224,9 @@ app.get("/", (req, res) => {
   let profileImageUrl = req.isAuthenticated()
     ? req.user.profile_image_url
     : favicon;
-  let user_id = req.isAuthenticated()
-  ? req.user.id
-  : 0;
+
   res.render(__dirname + "/views/home.ejs", {
-    profile_id: user_id,
+    profile_id: 0,
     profile_name: username,
     homeActive: home_active,
     cartActive: cart_active,
@@ -778,13 +776,10 @@ app.get("/login", (req, res) => {
     ? req.user.profile_image_url
     : favicon;
 
-  let user_id = req.isAuthenticated()
-    ? req.user.id
-    : 0;
 
   active_page("home");
   res.render(__dirname + "/views/login.ejs", {
-    profile_id: user_id,
+    profile_id: 0,
     profile_name: username,
     homeActive: home_active,
     cartActive: cart_active,
@@ -801,7 +796,8 @@ app.post("/login", (req, res, next) => {
     if (!user) {
       // Flash the error message based on the reason provided by `info.message`
       req.flash("error", info.message || "Invalid credentials. Please try again.");
-      return res.render("login", { 
+      return res.render("login", {
+        profile_id: 0,
         profile_name: "Guest",
         homeActive: home_active,
         cartActive: cart_active,
@@ -832,13 +828,9 @@ app.get("/register", (req, res) => {
     ? req.user.profile_image_url
     : favicon;
 
-    let user_id = req.isAuthenticated()
-    ? req.user.id
-    : 0;
-
   
   res.render(__dirname + "/views/register.ejs", {
-    profile_id: user_id,
+    profile_id: 0,
     profile_name: username,
     homeActive: home_active,
     cartActive: cart_active,
