@@ -60,6 +60,15 @@
 @media only screen and (max-width: 770px) {
   /*-------------------------- INDEX.ejs --------------------------*/
 
+  .home-container-2 .carousel-item {
+    height: 150px;
+  }
+
+  .home-container-2 .carousel-item img{
+    height: 150px;
+    object-fit: cover;
+  }
+
   .home-items-section .home-product-cards .card-items .card p {
     font-size: 10px;
   }
