@@ -224,7 +224,11 @@ app.get("/", (req, res) => {
   let profileImageUrl = req.isAuthenticated()
     ? req.user.profile_image_url
     : favicon;
+  let user_id = req.isAuthenticated()
+  ? req.user.id
+  : 0;
   res.render(__dirname + "/views/home.ejs", {
+    profile_id: user_id,
     profile_name: username,
     homeActive: home_active,
     cartActive: cart_active,
@@ -234,7 +238,7 @@ app.get("/", (req, res) => {
 });
 
 
-//-------------------------- HOME Routes --------------------------//
+//-------------------------- PROFILE Routes --------------------------//
 
 app.get("/profile", async (req, res) => {
   if (!req.isAuthenticated()) {
@@ -243,6 +247,7 @@ app.get("/profile", async (req, res) => {
   
   const userId = req.user.id;
   const username = req.user.username;
+  let user_id = req.user.id;
 
   try {
     // Await the database query to get user details
@@ -259,10 +264,9 @@ app.get("/profile", async (req, res) => {
 
     active_page("home"); // Assuming this function sets the active page context
 
-    
-
     // Render the profile page
     res.render(__dirname + "/views/user_profile.ejs", {
+      profile_id: user_id,
       profile_name: username,
       homeActive: home_active,
       cartActive: cart_active,
@@ -293,6 +297,7 @@ app.get("/home", async (req, res) => {
   if (req.isAuthenticated()) {
     try {
       const user = req.user;
+      let user_id = user.id;
       let username = user.username;
       let profileImageUrl = req.user.profile_image_url;
       const e_result = await db.query(
@@ -312,6 +317,7 @@ app.get("/home", async (req, res) => {
         electronics: e_result.rows,
         mensWear: m_result.rows,
         womensWear: w_result.rows,
+        profile_id: user_id,
         profile_name: username || "Guest",
         homeActive: home_active,
         cartActive: cart_active,
@@ -347,15 +353,17 @@ app.get("/specific", async (req, res) => {
     if (product) {
       let user = req.user;
       let username = user.username;
+      let user_id = user.id;
       let profileImageUrl = req.user.profile_image_url;
       // console.log(username)
       res.render(__dirname + "/views/specific.ejs", {
-        product: product,
         profile_name: username,
+        profile_id: user_id,
+        profileImageUrl: profileImageUrl,
         homeActive: home_active,
         cartActive: cart_active,
         socialActive: social_active,
-        profileImageUrl: profileImageUrl,
+        product: product,
       });
     } else {
       res.status(404).send("Product not found");
@@ -372,14 +380,14 @@ app.get("/cart", async (req, res) => {
   active_page("cart");
   if (req.isAuthenticated()) {
     try {
-      const userId = req.user.id; // Get the authenticated user's ID
+      const user_id = req.user.id; // Get the authenticated user's ID
       let profileImageUrl = req.user.profile_image_url;
       const cartItemsResult = await db.query(
         `SELECT cart.id AS cart_id, cart.user_id, cart.product_id, products.name, products.price, products.image_url
          FROM cart 
          JOIN products ON cart.product_id = products.id 
          WHERE cart.user_id = $1`,
-        [userId]
+        [user_id]
       );
 
       const cartItems = cartItemsResult.rows;
@@ -389,9 +397,10 @@ app.get("/cart", async (req, res) => {
 
       const username = req.user.username; // Get the username
       res.render(__dirname + "/views/cart.ejs", {
+        profile_id: user_id,
+        profile_name: username || "Guest", // Ensure username is defined here
         cartItems: cartItems || [],
         totalPrice,
-        profile_name: username || "Guest", // Ensure username is defined here
         homeActive: home_active,
         cartActive: cart_active,
         profileImageUrl: profileImageUrl,
@@ -465,13 +474,9 @@ app.get("/social", async (req, res) => {
   }
 
   active_page("social");
-  const username = req.isAuthenticated()
-    ? req.user.username
-    : "Guest"; // Check if the user is authenticated
-  let profileImageUrl = req.isAuthenticated()
-    ? req.user.profile_image_url
-    : favicon;
-  let userId = req.user.id
+  const username = req.user.username;
+  let profileImageUrl = req.user.profile_image_url;
+  let user_id = req.user.id;
 
   let post_result = await db.query(`
     SELECT 
@@ -518,11 +523,10 @@ app.get("/social", async (req, res) => {
     ORDER BY 
         up.created_at DESC
     LIMIT 10;
-`,[userId]);
-
-
+`,[user_id]);
 
   res.render(__dirname + "/views/social.ejs", {
+    profile_id: user_id,
     profile_name: username,
     homeActive: home_active,
     cartActive: cart_active,
@@ -544,6 +548,9 @@ app.get("/post-edit", async (req, res) => {
   let profileImageUrl = req.isAuthenticated()
     ? req.user.profile_image_url
     : favicon;
+  let user_id = req.isAuthenticated()
+    ? req.user.id
+    : 0;
   const action = req.query.action;
   const productId = req.query.productId;
   let product = null;
@@ -557,6 +564,7 @@ app.get("/post-edit", async (req, res) => {
   }
 
   res.render(__dirname + "/views/post_edit.ejs", {
+    profile_id: user_id,
     profile_name: username,
     homeActive: home_active,
     cartActive: cart_active,
@@ -769,8 +777,14 @@ app.get("/login", (req, res) => {
   let profileImageUrl = req.isAuthenticated()
     ? req.user.profile_image_url
     : favicon;
+
+  let user_id = req.isAuthenticated()
+    ? req.user.id
+    : 0;
+
   active_page("home");
   res.render(__dirname + "/views/login.ejs", {
+    profile_id: user_id,
     profile_name: username,
     homeActive: home_active,
     cartActive: cart_active,
@@ -817,7 +831,14 @@ app.get("/register", (req, res) => {
   let profileImageUrl = req.isAuthenticated()
     ? req.user.profile_image_url
     : favicon;
+
+    let user_id = req.isAuthenticated()
+    ? req.user.id
+    : 0;
+
+  
   res.render(__dirname + "/views/register.ejs", {
+    profile_id: user_id,
     profile_name: username,
     homeActive: home_active,
     cartActive: cart_active,
@@ -1005,7 +1026,11 @@ app.get(`/admin-login`, (req, res) => {
   let profileImageUrl = req.isAuthenticated()
     ? req.user.profile_image_url
     : favicon;
+  let user_id = req.isAuthenticated()
+    ? req.user.id
+    : 0;
   res.render(__dirname + "/views/admin_login.ejs", {
+    profile_id: user_id,
     profile_name: "Admin",
     homeActive: home_active,
     cartActive: cart_active,

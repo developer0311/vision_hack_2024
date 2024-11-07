@@ -57,19 +57,25 @@
 
 /*========================== < 750px ==========================*/
 
-@media only screen and (max-width: 765px) {
+@media only screen and (max-width: 770px) {
   /*-------------------------- INDEX.ejs --------------------------*/
 
   .home-items-section .home-product-cards .card-items .card p {
     font-size: 10px;
   }
-
+  .home-items-section .home-product-cards .card-items {
+    flex: 0 0 calc(33.33% - 10px); /* Three cards in view on mobile */
+  }
   .home-items-section .home-product-cards .card-items .card .card-body {
     padding: 1px;
   }
 
   .home-items-section .home-product-cards .card-items .card img {
     padding: 5px;
+  }
+  .home-items-section .carousel-btn{
+
+    padding: 20px 10px;
   }
 
   /*-------------------------- SPECIFIC.ejs --------------------------*/
@@ -148,20 +154,19 @@
   }
 
   .home-items-section .home-product-cards .card-items {
-    flex: 0 0 calc(20% - 10px); /* Five cards per row */
-    margin: 0 5px; /* Adjust margin for smaller screens */
+    margin: 0 5px;
   }
 
   .home-items-section .home-product-cards .card-items .card .img-container {
-    height: 150px; /* Adjust height of the image container */
+    height: 150px;
   }
 
   .home-items-section .home-product-cards .card-body {
-    padding: 5px; /* Reduce padding */
+    padding: 5px;
   }
 
   .home-items-section .home-product-cards .card-items .card p {
-    font-size: 14px; /* Adjust font size for smaller screens */
+    font-size: 10px;
   }
 
   /*-------------------------- SPECIFIC.ejs --------------------------*/
