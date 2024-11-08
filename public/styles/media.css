@@ -258,7 +258,8 @@
     height: 130px;
   }
 
-  .card-body{
+  .card-body .card-title,
+  .card-body .card-text{
     font-size: 10px;
     padding: 5px;
   }
