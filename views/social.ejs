@@ -3,13 +3,21 @@
 <section class="social-container">
     <% posts.forEach((post, index) => { %> <!-- Use index to create unique IDs for each post -->
         <div class="post" data-rating="<%= post.rating %>">
-            <div class="profile">
-                <img src="<%= post.profile_image_url %>" alt="" style="width: 30px; height: 30px; border-radius: 50%;">
-                <p><%= post.username %></p>
+            <div class="profile mb-2">
+                <a href="profile/user?targetId=<%= post.post_user_id %>">
+                    <img src="<%= post.profile_image_url %>" alt="" style="width: 30px; height: 30px; border-radius: 50%;">
+                    <p><%= post.username %></p>
+                </a>
             </div>
+
             <div class="post-image">
                 <img src="<%= post.post_image_url %>" alt="">
             </div>
+
+            <div class="post-product-name my-3">
+                <h3 style="text-align: center;"><%=post.product_name%></h3>
+            </div>
+
             <div class="post-tags">
                 <div class="tags">
                     <div class="eco-friendly <%= post.eco_friendly === 0 ? 'not' : post.eco_friendly === 1 ? 'partial' : 'fully' %>">
@@ -18,7 +26,7 @@
                     </div>
                     <div class="recycled <%= post.recycled === 0 ? 'not' : post.recycled === 1 ? 'partial' : 'fully' %>">
                         <p>Recycled</p>
-                        <img src="/images/recycled.png" class="tag-image" alt="">
+                        <img src="/images/recycled.png" class="tag-image" style="width:20px" alt="">
                     </div>
                     <div class="locally-sourced <%= post.locally_sourced === 0 ? 'not' : post.locally_sourced === 1 ? 'partial' : 'fully' %>">
                         <p>Locally Sourced</p>
@@ -26,9 +34,11 @@
                     </div>
                 </div>
             </div>
+
             <div class="post-caption">
                 <p><%= post.post_text %></p>
             </div>
+
             <div class="post-rating">
                 <div class="star-rating">
                     <div class="star-rating-bg">
@@ -39,6 +49,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="post-like-comment">
                 <div class="l-c-s-d-option">
                     <a href="/like?id=<%= post.post_id %>">
@@ -51,6 +62,7 @@
                     <span><%= post.comments_count %></span>
                 </div>
             </div>
+
             <div id="comment-section-<%= post.post_id %>" class="comment-section" style="display: none;">
                 <form action="/comment" method="POST">
                     <input type="hidden" name="postId" value="<%= post.post_id %>" />
@@ -63,13 +75,17 @@
                     <ul class="user-comments">
                         <% post.comments.forEach(comment => { %>
                             <li class="user-comment">
-                                <img src="<%= comment.profile_image_url %>" alt="" style="width: 30px; height: 30px; border-radius: 50%;">
-                                <strong><%= comment.username %></strong> <%= comment.comment %>
+                                <a href="/profile/user?targetId=<%= comment.user_id %>">
+                                    <img src="<%= comment.profile_image_url %>" alt="" style="width: 30px; height: 30px; border-radius: 50%;">
+                                    <p><strong><%= comment.username %></strong> </p>
+                                </a>
+                                <p><%= comment.comment %></p>
                             </li>
                         <% }) %>
                     </ul>
                 </div>
             </div>
+
         </div>
     <% }) %>
     <br><br>

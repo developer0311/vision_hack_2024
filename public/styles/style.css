@@ -36,6 +36,7 @@ h3 {
 }
 
 p,
+span,
 a,
 li,
 label,
@@ -414,9 +415,23 @@ footer i {
   justify-content: flex-start;
   align-items: center;
 }
+  
+.social-container .post .profile a{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  text-decoration: none;
+  color: #7966ff;
+  font-weight: bold;
+  transition: all 0.2s ease-in-out;
+}
+
+.social-container .post .profile a:hover{
+  opacity: 0.6;
+}
 
 .social-container .post .profile img {
-  margin-right: 5px;
+  margin-right: 10px;
 }
 
 .social-container .post > * {
@@ -471,12 +486,13 @@ footer i {
 }
 
 .user-control-options {
+  margin: 10px auto;
   position: fixed;
   bottom: 70px;
   left: calc((100vw - 700px) / 2);
   height: 60px;
-  width: 80px;
-  margin: 10px auto;
+  width: 60px;
+  border-radius: 50%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -485,6 +501,15 @@ footer i {
   box-shadow: 0px 0px 10px 1px #000;
 }
 
+.user-control-options .add-new-post{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.user-control-options .add-new-post a {
+  width: 30px;
+  height: 30px;
+}
 .user-control-options .add-new-post i {
   font-size: 30px;
 }
@@ -535,6 +560,10 @@ footer i {
   background-color: #0000003a;
 }
 
+.comment-section form {
+  margin-bottom: 20px;
+}
+
 .comment-section .comment-input {
   margin-right: 10px;
   padding: 2px 10px;
@@ -565,25 +594,6 @@ footer i {
   background-color: #ff5849;
 }
 
-.user-comments {
-  padding: 5px 2px;
-}
-
-.user-comments .user-comment {
-  list-style: none;
-  color: var(--body-text-color);
-  font-size: 15px;
-  margin-bottom: 2px;
-}
-
-.comment-section form {
-  margin-bottom: 20px;
-}
-
-.comment-section {
-  width: 100%;
-}
-
 .comment-section .comments-list {
   max-height: 150px; /* Show only 10 lines */
   width: 100%;
@@ -606,6 +616,45 @@ footer i {
 
 .comment-section .comments-list::-webkit-scrollbar-track {
   background-color: #f0f0f0;
+}
+
+.user-comments {
+  padding: 5px 2px;
+}
+
+.user-comments .user-comment {
+  list-style: none;
+  color: var(--body-text-color);
+  font-size: 15px;
+  margin-bottom: 2px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.user-comments .user-comment p{
+  margin-bottom: 0px;
+}
+
+.user-comments .user-comment a{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  text-decoration: none;
+  color: #c1ebff;
+  transition: all 0.2s ease-in-out;
+}
+
+.user-comments .user-comment a:hover{
+  opacity: 0.9;
+}
+
+.user-comments .user-comment a > *{
+  margin-right: 6px;
+}
+
+.comment-section {
+  width: 100%;
 }
 
 .user-comments .user-comment {

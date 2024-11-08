@@ -592,9 +592,12 @@ app.get("/social", async (req, res) => {
   let post_result = await db.query(`
     SELECT 
         up.id AS post_id,
+        u.id AS user_id,              -- Added u.id to get the user ID of the post owner
         u.username,
+        up.user_id AS post_user_id,   -- This is the original user_id from the user_posts table
         u.profile_image_url,
         up.image_url AS post_image_url,
+        p.name AS product_name,       -- Added product's name to the SELECT statement
         p.eco_friendly,
         p.recycled,
         p.locally_sourced,
@@ -610,6 +613,7 @@ app.get("/social", async (req, res) => {
                     'comment_id', pc.id,
                     'comment', pc.comment,
                     'commented_at', pc.commented_at,
+                    'user_id', pc.user_id,
                     'username', uc.username,
                     'profile_image_url', uc.profile_image_url
                 )
@@ -628,13 +632,16 @@ app.get("/social", async (req, res) => {
     LEFT JOIN 
         users uc ON pc.user_id = uc.id
     GROUP BY 
-        up.id, u.username, u.profile_image_url, up.image_url, p.eco_friendly, 
+        up.id, u.id, u.username, u.profile_image_url, up.image_url, p.name, p.eco_friendly, 
         p.recycled, p.locally_sourced, p.rating, up.post_text, up.likes_count, 
         up.comments_count, up.created_at, pl.action
     ORDER BY 
         up.created_at DESC
     LIMIT 10;
-`,[user_id]);
+`, [user_id]);
+
+
+
 
   res.render(__dirname + "/views/social.ejs", {
     profile_name: username,
