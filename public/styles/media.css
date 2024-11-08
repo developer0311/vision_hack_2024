@@ -51,7 +51,17 @@
 
   .post-edit-container .post-image img{
     width: 30%;
-}
+  }
+
+  .follow-btn{
+    font-size: 12px;
+    width: 100px;
+  }
+
+  .profile .e-f-f{ 
+    width: 100%;
+    font-size: 12px;
+  }
 
 }
 

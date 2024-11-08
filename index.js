@@ -226,13 +226,12 @@ app.get("/", (req, res) => {
     : favicon;
 
   res.render(__dirname + "/views/home.ejs", {
-    profile_id: 0,
     profile_name: username,
     homeActive: home_active,
     cartActive: cart_active,
     socialActive: social_active,
     profileImageUrl: profileImageUrl,
-  }); // Render the home view
+  });
 });
 
 
@@ -264,7 +263,6 @@ app.get("/profile", async (req, res) => {
 
     // Render the profile page
     res.render(__dirname + "/views/user_profile.ejs", {
-      profile_id: user_id,
       profile_name: username,
       homeActive: home_active,
       cartActive: cart_active,
@@ -278,6 +276,124 @@ app.get("/profile", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
+
+app.get("/profile/user", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.redirect("/login"); // Redirect to login if not authenticated
+  }
+
+  const userId = req.user.id;  // Authenticated user's ID
+  const username = req.user.username;
+  const targetId = req.query.targetId;  // Target user ID to view profile
+
+  try {
+    // Check if targetId exists and differs from the authenticated user's ID
+    if (!targetId || targetId == userId) {
+      // Redirect to own profile if targetId is missing or matches authenticated user's ID
+      return res.redirect("/profile");
+    }
+
+    // Fetch target user's profile data
+    const userResult = await db.query("SELECT * FROM users WHERE id = $1", [targetId]);
+    const userPosts = await db.query("SELECT * FROM user_posts WHERE user_id = $1", [targetId]);
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).send("User not found.");
+    }
+
+    const profileData = userResult.rows[0];
+    const profileImageUrl = profileData.profile_image_url || "default-profile.png";
+
+    // Check if the authenticated user is following the target user
+    const followCheck = await db.query(
+      "SELECT * FROM user_follows WHERE follower_id = $1 AND followee_id = $2",
+      [userId, targetId]
+    );
+    const isFollowing = followCheck.rows.length > 0; // true if already following
+
+    active_page("home");
+
+    // Render the profile page for the target user
+    res.render("other_users_profile", {
+      profile_name: username,
+      homeActive: home_active,
+      cartActive: cart_active,
+      socialActive: social_active,
+      profileImageUrl: profileImageUrl,
+      profile: profileData,
+      post: userPosts.rows,
+      showFollowButton: true,  // Always show the follow button for other users
+      isFollowing: isFollowing  // Pass the follow status to conditionally show button state
+    });
+  } catch (err) {
+    console.error("Error fetching user profile", err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+
+// Follow/Unfollow Route
+app.post("/profile/follow", async (req, res) => {
+  const followerId = req.user.id; // Authenticated user's ID
+  const followeeId = req.body.followeeId; // ID of the user to follow/unfollow
+
+  if (followerId === followeeId) {
+    return res.status(400).json({ error: "You cannot follow yourself." });
+  }
+
+  try {
+    // Check if the follow relationship already exists
+    const checkFollow = await db.query(
+      "SELECT * FROM user_follows WHERE follower_id = $1 AND followee_id = $2",
+      [followerId, followeeId]
+    );
+
+    if (checkFollow.rows.length > 0) {
+      // If follow exists, unfollow
+      await db.query(
+        "DELETE FROM user_follows WHERE follower_id = $1 AND followee_id = $2",
+        [followerId, followeeId]
+      );
+
+      // Decrement total_following for the follower and total_follower for the followee
+      await db.query(
+        "UPDATE users SET total_following = total_following - 1 WHERE id = $1",
+        [followerId]
+      );
+      await db.query(
+        "UPDATE users SET total_follower = total_follower - 1 WHERE id = $1",
+        [followeeId]
+      );
+
+      return res.json({ message: "Unfollowed successfully", isFollowing: false });
+    } else {
+      // If follow does not exist, follow
+      await db.query(
+        "INSERT INTO user_follows (follower_id, followee_id) VALUES ($1, $2)",
+        [followerId, followeeId]
+      );
+
+      // Increment total_following for the follower and total_follower for the followee
+      await db.query(
+        "UPDATE users SET total_following = total_following + 1 WHERE id = $1",
+        [followerId]
+      );
+      await db.query(
+        "UPDATE users SET total_follower = total_follower + 1 WHERE id = $1",
+        [followeeId]
+      );
+
+      return res.json({ message: "Followed successfully", isFollowing: true });
+    }
+  } catch (err) {
+    console.error("Error in follow/unfollow function:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
 
 
 //-------------------------- INDEX Routes --------------------------//
@@ -315,7 +431,6 @@ app.get("/home", async (req, res) => {
         electronics: e_result.rows,
         mensWear: m_result.rows,
         womensWear: w_result.rows,
-        profile_id: user_id,
         profile_name: username || "Guest",
         homeActive: home_active,
         cartActive: cart_active,
@@ -356,7 +471,6 @@ app.get("/specific", async (req, res) => {
       // console.log(username)
       res.render(__dirname + "/views/specific.ejs", {
         profile_name: username,
-        profile_id: user_id,
         profileImageUrl: profileImageUrl,
         homeActive: home_active,
         cartActive: cart_active,
@@ -395,7 +509,6 @@ app.get("/cart", async (req, res) => {
 
       const username = req.user.username; // Get the username
       res.render(__dirname + "/views/cart.ejs", {
-        profile_id: user_id,
         profile_name: username || "Guest", // Ensure username is defined here
         cartItems: cartItems || [],
         totalPrice,
@@ -524,7 +637,6 @@ app.get("/social", async (req, res) => {
 `,[user_id]);
 
   res.render(__dirname + "/views/social.ejs", {
-    profile_id: user_id,
     profile_name: username,
     homeActive: home_active,
     cartActive: cart_active,
@@ -562,7 +674,6 @@ app.get("/post-edit", async (req, res) => {
   }
 
   res.render(__dirname + "/views/post_edit.ejs", {
-    profile_id: user_id,
     profile_name: username,
     homeActive: home_active,
     cartActive: cart_active,
@@ -779,7 +890,6 @@ app.get("/login", (req, res) => {
 
   active_page("home");
   res.render(__dirname + "/views/login.ejs", {
-    profile_id: 0,
     profile_name: username,
     homeActive: home_active,
     cartActive: cart_active,
@@ -797,7 +907,6 @@ app.post("/login", (req, res, next) => {
       // Flash the error message based on the reason provided by `info.message`
       req.flash("error", info.message || "Invalid credentials. Please try again.");
       return res.render("login", {
-        profile_id: 0,
         profile_name: "Guest",
         homeActive: home_active,
         cartActive: cart_active,
@@ -830,7 +939,6 @@ app.get("/register", (req, res) => {
 
   
   res.render(__dirname + "/views/register.ejs", {
-    profile_id: 0,
     profile_name: username,
     homeActive: home_active,
     cartActive: cart_active,
@@ -868,7 +976,6 @@ app.post(
         }
         return res.render("register", {
           errorMessage: errorMessage,
-          profile_id: 0,
           profile_name: "Guest",
           homeActive: home_active,
           cartActive: cart_active,
@@ -1029,7 +1136,6 @@ app.get(`/admin-login`, (req, res) => {
     ? req.user.id
     : 0;
   res.render(__dirname + "/views/admin_login.ejs", {
-    profile_id: user_id,
     profile_name: "Admin",
     homeActive: home_active,
     cartActive: cart_active,

@@ -501,6 +501,7 @@ footer i {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 
 .post-like-comment .l-c-s-d-option a {
@@ -519,7 +520,8 @@ footer i {
 
 .post-like-comment .l-c-s-d-option span {
   text-decoration: none;
-  font-size: 10px;
+  color: #000;
+  font-size: 12px;
 }
 
 .comment-section {
@@ -670,6 +672,13 @@ footer i {
   width: 0px;
 }
 
+.profile .e-f-f{ 
+  width: 95%;
+}
+
+.follow-btn{
+  width: 100px;
+}
 
 
 /*-------------------------- LOGIN.ejs & REGISTER.ejs --------------------------*/
