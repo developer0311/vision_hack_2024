@@ -323,9 +323,10 @@ app.get("/profile/user", async (req, res) => {
     return res.redirect("/login"); // Redirect to login if not authenticated
   }
 
-  const userId = req.user.id;  // Authenticated user's ID
+  const userId = req.user.id;
   const username = req.user.username;
-  const targetId = req.query.targetId;  // Target user ID to view profile
+  const profileImageUrl = req.user.profile_image_url;
+  const targetId = req.query.targetId;
 
   try {
     // Check if targetId exists and differs from the authenticated user's ID
@@ -343,7 +344,6 @@ app.get("/profile/user", async (req, res) => {
     }
 
     const profileData = userResult.rows[0];
-    const profileImageUrl = profileData.profile_image_url || "default-profile.png";
 
     // Check if the authenticated user is following the target user
     const followCheck = await db.query(
