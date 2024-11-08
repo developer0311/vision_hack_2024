@@ -725,6 +725,10 @@ footer i {
   width: 95%;
 }
 
+.profile .e-f-f .e-f-f-options{
+  padding: 0 !important;
+}
+
 .follow-btn{
   width: 100px;
 }

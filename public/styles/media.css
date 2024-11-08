@@ -53,6 +53,8 @@
     width: 30%;
   }
 
+  /*-------------------------- PROFILE.ejs --------------------------*/
+
   .follow-btn{
     font-size: 12px;
     width: 100px;
@@ -189,6 +191,7 @@
   }
 
   /*-------------------------- SPECIFIC.ejs --------------------------*/
+
   .specific-item .item-image .deal-option {
     flex-direction: column;
     align-items: center;
@@ -245,5 +248,12 @@
 
   .specific-item .item-details .item-more-details ul li {
     font-size: 12px;
+  }
+
+
+  /*-------------------------- PROFILE.ejs --------------------------*/
+
+  .profile-header {
+    padding: 20px 10px;
   }
 }
