@@ -351,7 +351,6 @@ app.get("/profile/user", async (req, res) => {
       [userId, targetId]
     );
     const isFollowing = followCheck.rows.length > 0; // true if already following
-
     active_page("home");
 
     // Render the profile page for the target user
@@ -361,6 +360,7 @@ app.get("/profile/user", async (req, res) => {
       cartActive: cart_active,
       socialActive: social_active,
       profileImageUrl: profileImageUrl,
+      other_user_profile_image: profileData.profile_image_url,
       profile: profileData,
       post: userPosts.rows,
       showFollowButton: true,  // Always show the follow button for other users
