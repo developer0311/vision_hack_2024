@@ -30,6 +30,17 @@
   .specific-item .item-details .item-more-details ul {
     margin-bottom: 40px;
   }
+
+  /*-------------------------- SEARCH_RESULTS.ejs --------------------------*/
+
+  .card-items{
+    width: 25%;
+  }
+
+  .card-items .card .img-container{
+    padding: 10px;
+  }
+
 }
 
 /*========================== < 950px ==========================*/
@@ -54,15 +65,22 @@
   }
 
   /*-------------------------- PROFILE.ejs --------------------------*/
-
+  
   .follow-btn{
     font-size: 12px;
     width: 100px;
   }
-
+  
   .profile .e-f-f{ 
     width: 100%;
     font-size: 12px;
+  }
+  
+
+  /*-------------------------- SEARCH_RESULTS.ejs --------------------------*/
+
+  .card-items{
+    width: 30%;
   }
 
 }
@@ -231,6 +249,22 @@
   .specific-item .item-details .item-more-details ul li {
     font-size: 12px;
   }
+
+
+  /*-------------------------- SEARCH_RESULTS.ejs --------------------------*/
+
+  .card-items .card .img-container{
+    padding: 2px;
+    height: 130px;
+  }
+
+  .card-body{
+    font-size: 10px;
+    padding: 5px;
+  }
+
+
+
 }
 
 /*========================== < 435px ==========================*/

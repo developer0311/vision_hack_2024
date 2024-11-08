@@ -186,33 +186,66 @@ let handleCloudinaryImageDelete = async (public_id) => {
 //-------------------------- SEARCH Routes --------------------------//
 
 app.get("/search", async (req, res) => {
+  // Get the search query from the URL
+  const searchQuery = req.query.search;  // Assuming search query is sent as 'q'
+
+  // If no query is provided, return an empty result or message
+  if (!searchQuery) {
+    return res.render(__dirname + "/views/search_results.ejs", {
+      profile_name: "developer0311", // Assuming default username
+      homeActive: home_active,
+      cartActive: cart_active,
+      socialActive: social_active,
+      profileImageUrl: favicon,
+      userResults: [],
+      productResults: [],
+      noUserMessage: "No user found",
+      noProductMessage: "No products found"
+    });
+  }
+
   try {
-    // Get the search query from the input field
-    const searchTerm = req.query.search;
-    console.log(searchTerm)
+    // Query to find users matching the search query
+    const usersQuery = `
+      SELECT id, username, profile_image_url
+      FROM users
+      WHERE username ILIKE $1
+      LIMIT 10;
+    `;
+    const usersResult = await db.query(usersQuery, [`%${searchQuery}%`]);
 
-    // Query the database to find the book by title (using ILIKE for case-insensitive partial matches)
-    const result = await db.query(
-      "SELECT id FROM products WHERE name ILIKE $1 LIMIT 1",
-      [`%${searchTerm}%`] // Using % for partial matches
-    );
+    // Query to find products matching the search query
+    const productsQuery = `
+      SELECT id, name, image_url, price, description
+      FROM products
+      WHERE name ILIKE $1 OR description ILIKE $1
+      LIMIT 10;
+    `;
+    const productsResult = await db.query(productsQuery, [`%${searchQuery}%`]);
 
-    // If a book is found, redirect to the specific book page
-    if (result.rows.length > 0) {
-      const productId = result.rows[0].id;
-      res.redirect(`/specific?id=${productId}`);
-    } else {
-      let user = req.user;
-      let username = get_username(user.email);
-      let profileImageUrl = req.user.profile_image_url;
-      // If no book is found, redirect to a general books page or handle the "no results" case
-      res.redirect("/specific?id=${productId}");
-    }
-  } catch (error) {
-    console.error("Error searching for book:", error);
-    res.status(500).send("Internal server error");
+    // Set messages for no results
+    const noUserMessage = usersResult.rows.length === 0 ? "No user found" : null;
+    const noProductMessage = productsResult.rows.length === 0 ? "No products found" : null;
+
+    // Render the results page
+    res.render(__dirname + "/views/search_results.ejs", {
+      profile_name: "developer0311", // User's profile name
+      homeActive: home_active,
+      cartActive: cart_active,
+      socialActive: social_active,
+      profileImageUrl: favicon,
+      userResults: usersResult.rows,
+      productResults: productsResult.rows,
+      noUserMessage: noUserMessage,
+      noProductMessage: noProductMessage
+    });
+
+  } catch (err) {
+    console.error("Error fetching search results:", err);
+    res.status(500).send("Internal Server Error");
   }
 });
+
 
 
 //-------------------------- HOME Routes --------------------------//

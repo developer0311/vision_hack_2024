@@ -43,6 +43,7 @@ label,
 input,
 button,
 textarea {
+  text-decoration: none;
   font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
@@ -731,6 +732,93 @@ footer i {
 
 .follow-btn{
   width: 100px;
+}
+
+
+/*-------------------------- USER_PROFILE.ejs --------------------------*/
+
+.result-by-user,
+.result-by-products{
+  padding: 10px 20px;
+  border-radius: 10px;
+}
+
+.result-by-user h2,
+.result-by-products h2{
+  margin-bottom: 15px;
+}
+
+.user-card-items{
+  margin-bottom: 10px;
+  padding: 10px;
+}
+.user-card-items .user-card{
+  padding: 5px 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  box-shadow: 0px 0px 3px 0px #000000;
+}
+
+.user-card-items .user-card .img-container{
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  border-radius: 50%;
+  box-shadow: 0px 0px 2px 3px #7b35ff
+}
+
+.user-card-items .user-card .img-container img{
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+.user-card-items .user-card .card-body{
+  color: #000;
+}
+
+.user-card-items .user-card .card-body p{
+  overflow: hidden;
+}
+
+.products-results .card-items{
+  margin-bottom: 20px;
+  width: 20%;
+}
+
+.products-results .card-items a{
+  text-decoration: none;
+}
+
+.products-results .card-items .card .img-container {
+  width: 100%;
+  height: 200px;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.products-results .card-items .card .img-container img {
+  width: auto;
+  height: 100%;
+  max-width: 100%; 
+  object-fit: contain;
+}
+
+.products-results .card-body{
+  padding: 5px;
+  font-size: 12px;
+}
+
+.products-results .card-items .card-body p,
+.products-results .card-items .card-body .card-title{
+  margin: 0;
+  text-decoration: none;
 }
 
 

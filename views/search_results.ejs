@@ -1,0 +1,56 @@
+<%- include('partials/header') %>
+
+<section class="result-by-user">
+    <h2>Users</h2>
+    <div class="user-results results">
+        <div class="container">
+            <div class="row justify-content-start">
+                <% if (userResults.length > 0) { %>
+                    <% userResults.forEach(user => { %>
+                        <div class="col-lg-3 col-md-4 col-sm-4 user-card-items">
+                            <a href="/profile/user?targetId=<%= user.id %>" class="user-card">
+                                <div class="img-container">
+                                    <img src="<%= user.profile_image_url %>" class="card-img-top" alt="<%= user.username %>">
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-username"><%= user.username %></p>
+                                </div>
+                            </a>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <p class="mb-2"><%= noUserMessage %></p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="result-by-products">
+    <h2>Products</h2>
+    <div class="products-results results">
+        <div class="container text-center">
+            <div class="row justify-content-between">
+                <% if (productResults.length > 0) { %>
+                    <% productResults.forEach(product => { %>
+                        <div class="col-lg-3 col-md-4 col-sm-4 card-items">
+                            <a href="/specific?id=<%= product.id %>" class="card">
+                                <div class="img-container">
+                                    <img src="<%= product.image_url %>" class="card-img-top" alt="<%= product.name %>">
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-title"><%= product.name %></p>
+                                    <p class="card-text">From ₹<%= product.price %></p>
+                                </div>
+                            </a>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <p class="mb-3" style="text-align: left;"><%= noProductMessage %></p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer') %>
