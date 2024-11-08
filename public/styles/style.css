@@ -43,8 +43,10 @@ label,
 input,
 button,
 textarea {
-  text-decoration: none;
   font-family: Georgia, 'Times New Roman', Times, serif;
+}
+a{
+  text-decoration: none;
 }
 
 .my-active {
