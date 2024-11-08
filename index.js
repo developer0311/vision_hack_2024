@@ -187,16 +187,23 @@ let handleCloudinaryImageDelete = async (public_id) => {
 
 app.get("/search", async (req, res) => {
   // Get the search query from the URL
+  if (!req.isAuthenticated()) {
+    return res.redirect("/login"); // Redirect to login if not authenticated
+  }
+  
   const searchQuery = req.query.search;  // Assuming search query is sent as 'q'
+  const username = req.user.username;
+  let user_id = req.user.id;
+  const profileImageUrl = req.user.profile_image_url
 
   // If no query is provided, return an empty result or message
   if (!searchQuery) {
     return res.render(__dirname + "/views/search_results.ejs", {
-      profile_name: "developer0311", // Assuming default username
+      profile_name: username, // Assuming default username
       homeActive: home_active,
       cartActive: cart_active,
       socialActive: social_active,
-      profileImageUrl: favicon,
+      profileImageUrl: profileImageUrl,
       userResults: [],
       productResults: [],
       noUserMessage: "No user found",
@@ -229,11 +236,11 @@ app.get("/search", async (req, res) => {
 
     // Render the results page
     res.render(__dirname + "/views/search_results.ejs", {
-      profile_name: "developer0311", // User's profile name
+      profile_name: username, // Assuming default username
       homeActive: home_active,
       cartActive: cart_active,
       socialActive: social_active,
-      profileImageUrl: favicon,
+      profileImageUrl: profileImageUrl,
       userResults: usersResult.rows,
       productResults: productsResult.rows,
       noUserMessage: noUserMessage,
@@ -1091,6 +1098,15 @@ app.get("/logout", (req, res) => {
     res.redirect("/");
   });
 });
+
+app.get("/profile/logout", (req, res) => {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
+  });
+})
 
 
 //-------------------------- PASSPORT LOGICS --------------------------//
