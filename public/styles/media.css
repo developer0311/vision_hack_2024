@@ -47,6 +47,13 @@
 
 @media only screen and (max-width: 950px) {
 
+
+  /*-------------------------- HOME.ejs --------------------------*/
+  
+  .lead{
+    font-size: 12px;
+  }
+
   /*-------------------------- INDEX.ejs --------------------------*/
 
   .home-items-section .home-product-cards .card-items .card p {
