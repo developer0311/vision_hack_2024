@@ -44,18 +44,32 @@
 
 /*========================== < 1200px ==========================*/
 
-@media (max-width: 1200px) {
+@media only screen and (max-width: 1200px) {
   /*-------------------------- SEARCH_RESULTS.ejs --------------------------*/
 
   .products-results .card-items {
-    flex: 1 1 calc(33.33% - 10px); /* Show 3 items per row on medium screens */
-    max-width: calc(33.33% - 10px);
+    flex: 0 0 calc(25% - 10px);
+  }
+  
+  .home-items-section .home-product-cards .card-items .card p {
+    font-size: 12px;
+    padding: 0;
+    margin: 0;
+  }
+
+  .home-items-section .home-product-cards .card-items .card .card-text{
+    margin-bottom: 10px;
   }
 }
 
 /*========================== < 950px ==========================*/
 
 @media only screen and (max-width: 950px) {
+
+  main{
+    min-height: calc(100vh - 70px - 90px);
+  }
+
   /*-------------------------- HOME.ejs --------------------------*/
 
   .lead {
@@ -69,7 +83,7 @@
   }
 
   .home-items-section .home-product-cards .card-items {
-    flex: 0 0 calc(20% - 10px);
+    flex: 0 0 calc(25% - 10px);
     margin: 0px 5px;
   }
 
@@ -285,10 +299,10 @@
 
 /*========================== < 576px ==========================*/
 
-@media (max-width: 576px) {
+@media only screen and (max-width: 576px) {
 
   /*-------------------------- SEARCH_RESULTS.ejs --------------------------*/
-  
+
   .products-results .card-items {
     flex: 1 1 100%; /* Show 1 item per row on very small screens */
     max-width: 100%;
